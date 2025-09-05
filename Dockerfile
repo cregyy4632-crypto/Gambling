@@ -23,5 +23,5 @@ EXPOSE 8080
 # Set environment variable for port (Optional, but good practice)
 ENV PORT=8080
 
-# Run the application
-CMD ["sh", "-c", "java $JAVA_OPTS -jar target/gambling-0.0.1-SNAPSHOT.jar --server.port=$PORT"]
+# Run the application (MISSING ENTRYPOINT/CMD)
+CMD ["sh", "-c", "java -jar target/*.jar --server.port=$PORT"]
