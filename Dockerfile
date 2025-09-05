@@ -1,29 +1,27 @@
+# Use the official OpenJDK 17 base image
 FROM openjdk:17-jdk-slim
 
+# Set the working directory inside the container
 WORKDIR /app
 
 # Install Maven
 RUN apt-get update && apt-get install -y maven && rm -rf /var/lib/apt/lists/*
 
-# Copy Maven wrapper and pom.xml
-COPY .mvn .mvn
+# Copy the Maven wrapper and project definition file
+COPY .mvn/ .mvn/
 COPY mvnw pom.xml ./
 
-# Make mvnw executable
+# Make the mvnw script executable
 RUN chmod +x mvnw
 
-# Copy source code
+# Copy the full source code
 COPY src ./src
 
-# Build the application
-RUN mvn clean package -DskipTests
+# Build the application, creating an executable JAR
+RUN ./mvnw clean package -DskipTests
 
-# Expose port
+# Expose the port the app runs on
 EXPOSE 8080
 
-# Set environment variables
-ENV PORT=8080
-ENV JAVA_OPTS="-Xmx512m -Xms256m"
-
-# Run the application
-CMD ["sh", "-c", "java $JAVA_OPTS -jar target/gambling-0.0.1-SNAPSHOT.jar --server.port=$PORT"]
+# Command to run the application
+ENTRYPOINT ["java", "-jar", "target/your-application.jar"]
