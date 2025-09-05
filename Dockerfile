@@ -23,5 +23,8 @@ RUN ./mvnw clean package -DskipTests
 # Expose the port the app runs on
 EXPOSE 8080
 
-# Command to run the application
-ENTRYPOINT ["java", "-jar", "target/your-application.jar"]
+# Set environment variable for port (Optional, but good practice)
+ENV PORT=8080
+
+# Run the application
+CMD ["sh", "-c", "java $JAVA_OPTS -jar target/gambling-0.0.1-SNAPSHOT.jar --server.port=$PORT"]
