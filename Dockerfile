@@ -2,15 +2,21 @@ FROM openjdk:17-jdk-slim
 
 WORKDIR /app
 
+# Install Maven
+RUN apt-get update && apt-get install -y maven && rm -rf /var/lib/apt/lists/*
+
 # Copy Maven wrapper and pom.xml
 COPY .mvn .mvn
 COPY mvnw pom.xml ./
+
+# Make mvnw executable
+RUN chmod +x mvnw
 
 # Copy source code
 COPY src ./src
 
 # Build the application
-RUN ./mvnw clean package -DskipTests
+RUN mvn clean package -DskipTests
 
 # Expose port
 EXPOSE 8080
