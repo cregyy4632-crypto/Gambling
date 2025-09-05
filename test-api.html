@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Blackjack API Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-section { margin: 20px 0; padding: 15px; border: 1px solid #ccc; border-radius: 5px; }
+        button { margin: 5px; padding: 10px 15px; }
+        .response { background: #f5f5f5; padding: 10px; margin: 10px 0; border-radius: 3px; }
+        pre { white-space: pre-wrap; }
+    </style>
+</head>
+<body>
+    <h1>Blackjack API Test Page</h1>
+    <p>Use this page to test the REST API endpoints. Make sure the Spring Boot application is running on port 8080.</p>
+    
+    <div class="test-section">
+        <h3>Game Controls</h3>
+        <button onclick="startGame()">Start New Game</button>
+        <button onclick="hit()">Hit</button>
+        <button onclick="stand()">Stand</button>
+        <button onclick="getState()">Get State</button>
+        <button onclick="resetGame()">Reset Game</button>
+    </div>
+    
+    <div class="test-section">
+        <h3>API Response</h3>
+        <div id="response" class="response">Click a button to test the API...</div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8080/api/blackjack';
+        
+        async function makeRequest(endpoint, method = 'GET') {
+            try {
+                const response = await fetch(`${API_BASE}${endpoint}`, {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+                
+                const data = await response.json();
+                document.getElementById('response').innerHTML = 
+                    `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+            } catch (error) {
+                document.getElementById('response').innerHTML = 
+                    `<pre>Error: ${error.message}</pre>`;
+            }
+        }
+        
+        function startGame() { makeRequest('/start', 'POST'); }
+        function hit() { makeRequest('/hit', 'POST'); }
+        function stand() { makeRequest('/stand', 'POST'); }
+        function getState() { makeRequest('/state', 'GET'); }
+        function resetGame() { makeRequest('/reset', 'POST'); }
+    </script>
+</body>
+</html>

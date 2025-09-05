@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blackjack Game</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #0f4c3a, #1a5f4a);
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 3rem;
+            margin-bottom: 30px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .game-area {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .hand-container {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .hand-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #ffd700;
+        }
+
+        .cards-display {
+            font-size: 2.5rem;
+            min-height: 80px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card {
+            background: white;
+            color: #333;
+            padding: 10px 15px;
+            border-radius: 8px;
+            font-weight: bold;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+            min-width: 60px;
+            text-align: center;
+        }
+
+        .hand-value {
+            font-size: 1.2rem;
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            padding: 12px 24px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 120px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(45deg, #4CAF50, #45a049);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.4);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a52);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 107, 107, 0.4);
+        }
+
+        .btn-warning {
+            background: linear-gradient(45deg, #ffa726, #ff9800);
+            color: white;
+        }
+
+        .btn-warning:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 167, 38, 0.4);
+        }
+
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .game-status {
+            text-align: center;
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 20px;
+            min-height: 30px;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .spinner {
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top: 4px solid #ffd700;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .error {
+            background: rgba(255, 0, 0, 0.2);
+            border: 1px solid #ff6b6b;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+            text-align: center;
+        }
+
+        .success {
+            background: rgba(0, 255, 0, 0.2);
+            border: 1px solid #4CAF50;
+            border-radius: 10px;
+            padding: 15px;
+            margin: 15px 0;
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .game-area {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .controls {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            button {
+                width: 200px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🃏 Blackjack Game</h1>
+        
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Loading...</p>
+        </div>
+
+        <div id="error-message" class="error" style="display: none;"></div>
+        <div id="success-message" class="success" style="display: none;"></div>
+
+        <div class="game-status" id="game-status">Click "New Game" to start playing!</div>
+
+        <div class="game-area">
+            <div class="hand-container">
+                <div class="hand-title">Dealer</div>
+                <div class="cards-display" id="dealer-cards">No cards</div>
+                <div class="hand-value" id="dealer-value">Value: 0</div>
+            </div>
+
+            <div class="hand-container">
+                <div class="hand-title">Player</div>
+                <div class="cards-display" id="player-cards">No cards</div>
+                <div class="hand-value" id="player-value">Value: 0</div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button id="new-game-btn" class="btn-primary" onclick="startNewGame()">New Game</button>
+            <button id="hit-btn" class="btn-secondary" onclick="hit()" disabled>Hit</button>
+            <button id="stand-btn" class="btn-warning" onclick="stand()" disabled>Stand</button>
+            <button id="reset-btn" class="btn-primary" onclick="resetGame()">Reset</button>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = '/api/blackjack';
+        let gameState = null;
+
+        function showLoading() {
+            document.getElementById('loading').style.display = 'block';
+        }
+
+        function hideLoading() {
+            document.getElementById('loading').style.display = 'none';
+        }
+
+        function showError(message) {
+            const errorDiv = document.getElementById('error-message');
+            errorDiv.textContent = message;
+            errorDiv.style.display = 'block';
+            setTimeout(() => {
+                errorDiv.style.display = 'none';
+            }, 5000);
+        }
+
+        function showSuccess(message) {
+            const successDiv = document.getElementById('success-message');
+            successDiv.textContent = message;
+            successDiv.style.display = 'block';
+            setTimeout(() => {
+                successDiv.style.display = 'none';
+            }, 3000);
+        }
+
+        function updateGameDisplay(state) {
+            gameState = state;
+            
+            // Update dealer cards
+            const dealerCards = document.getElementById('dealer-cards');
+            const dealerValue = document.getElementById('dealer-value');
+            
+            if (state.dealerCards && state.dealerCards.length > 0) {
+                dealerCards.innerHTML = state.dealerCards.map(card => 
+                    `<div class="card">${card}</div>`
+                ).join('');
+                dealerValue.textContent = `Value: ${state.dealerValue}`;
+            } else {
+                dealerCards.textContent = 'No cards';
+                dealerValue.textContent = 'Value: 0';
+            }
+
+            // Update player cards
+            const playerCards = document.getElementById('player-cards');
+            const playerValue = document.getElementById('player-value');
+            
+            if (state.playerCards && state.playerCards.length > 0) {
+                playerCards.innerHTML = state.playerCards.map(card => 
+                    `<div class="card">${card}</div>`
+                ).join('');
+                playerValue.textContent = `Value: ${state.playerValue}`;
+            } else {
+                playerCards.textContent = 'No cards';
+                playerValue.textContent = 'Value: 0';
+            }
+
+            // Update game status
+            const statusDiv = document.getElementById('game-status');
+            if (state.gameResult) {
+                statusDiv.textContent = state.gameResult;
+            } else if (state.playerBust) {
+                statusDiv.textContent = 'You busted! Dealer wins.';
+            } else if (state.dealerBust) {
+                statusDiv.textContent = 'Dealer busted! You win!';
+            } else if (state.roundOver) {
+                statusDiv.textContent = 'Round over.';
+            } else if (state.gameStarted) {
+                statusDiv.textContent = 'Game in progress. Make your move!';
+            } else {
+                statusDiv.textContent = 'Click "New Game" to start playing!';
+            }
+
+            // Update button states
+            const hitBtn = document.getElementById('hit-btn');
+            const standBtn = document.getElementById('stand-btn');
+            const newGameBtn = document.getElementById('new-game-btn');
+            const resetBtn = document.getElementById('reset-btn');
+
+            if (state.gameStarted && !state.roundOver) {
+                hitBtn.disabled = false;
+                standBtn.disabled = false;
+                newGameBtn.disabled = true;
+                resetBtn.disabled = false;
+            } else {
+                hitBtn.disabled = true;
+                standBtn.disabled = true;
+                newGameBtn.disabled = false;
+                resetBtn.disabled = !state.gameStarted;
+            }
+        }
+
+        async function makeApiCall(endpoint, method = 'GET') {
+            try {
+                showLoading();
+                const response = await fetch(`${API_BASE}${endpoint}`, {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                });
+
+                const data = await response.json();
+                hideLoading();
+
+                if (data.success) {
+                    if (data.data) {
+                        updateGameDisplay(data.data);
+                    }
+                    if (data.message) {
+                        showSuccess(data.message);
+                    }
+                } else {
+                    showError(data.message || 'An error occurred');
+                }
+            } catch (error) {
+                hideLoading();
+                showError('Network error: ' + error.message);
+            }
+        }
+
+        async function startNewGame() {
+            await makeApiCall('/start', 'POST');
+        }
+
+        async function hit() {
+            await makeApiCall('/hit', 'POST');
+        }
+
+        async function stand() {
+            await makeApiCall('/stand', 'POST');
+        }
+
+        async function resetGame() {
+            await makeApiCall('/reset', 'POST');
+        }
+
+        // Load initial game state
+        window.onload = function() {
+            makeApiCall('/state');
+        };
+    </script>
+</body>
+</html>
+
+
+
