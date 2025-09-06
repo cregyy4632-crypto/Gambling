@@ -510,7 +510,6 @@
                     <button class="btn btn-bet" onclick="clearBet()">Clear Bet</button>
                     <button class="btn btn-spin" id="spin-btn" onclick="spin()" disabled>🎣 SPIN</button>
                     <button class="btn btn-auto" id="auto-spin-btn" onclick="toggleAutoSpin()" disabled>🔄 AUTO SPIN</button>
-                    <button class="btn btn-test" onclick="testBet()" style="background: #ff6b6b;">TEST BET $10</button>
                 </div>
             </div>
 
@@ -776,26 +775,38 @@
             });
         }
 
-        function updateButtonStates() {
+        function enableSpinButton() {
             const spinBtn = document.getElementById('spin-btn');
             const autoBtn = document.getElementById('auto-spin-btn');
+            console.log('Enabling spin button - currentBet:', currentBet);
+            
+            if (currentBet > 0) {
+                spinBtn.disabled = false;
+                autoBtn.disabled = false;
+                console.log('Spin button enabled');
+            }
+        }
+
+        function disableSpinButton() {
+            const spinBtn = document.getElementById('spin-btn');
+            const autoBtn = document.getElementById('auto-spin-btn');
+            console.log('Disabling spin button');
+            
+            spinBtn.disabled = true;
+            autoBtn.disabled = true;
+        }
+
+        function updateButtonStates() {
             console.log('Updating button states - currentBet:', currentBet, 'gameState:', gameState);
             
-            // Enable spin button if we have a bet and either no game state or game is not started or round is over
             if (currentBet > 0) {
                 if (!gameState || !gameState.gameStarted || gameState.roundOver) {
-                    spinBtn.disabled = false;
-                    autoBtn.disabled = false;
-                    console.log('Buttons enabled - has bet and game ready');
+                    enableSpinButton();
                 } else {
-                    spinBtn.disabled = true;
-                    autoBtn.disabled = true;
-                    console.log('Buttons disabled - game in progress');
+                    disableSpinButton();
                 }
             } else {
-                spinBtn.disabled = true;
-                autoBtn.disabled = true;
-                console.log('Buttons disabled - no bet placed');
+                disableSpinButton();
             }
         }
 
@@ -809,7 +820,7 @@
             gameState = null;
             currentBet = 0;
             updateBetDisplay();
-            updateButtonStates();
+            disableSpinButton();
             
             // Clear the reels
             for (let i = 1; i <= 5; i++) {
@@ -827,19 +838,15 @@
             // Update status
             document.getElementById('game-status').textContent = '🎰 Place your bet and click SPIN!';
             document.getElementById('game-status').className = 'game-status';
+            
+            console.log('Game state reset');
         }
 
         function addBet(amount) {
-            console.log('=== ADD BET DEBUG ===');
-            console.log('Amount to add:', amount);
-            console.log('Current bet before:', currentBet);
-            console.log('Player balance:', playerBalance);
-            console.log('Type of currentBet:', typeof currentBet);
-            console.log('Type of amount:', typeof amount);
+            console.log('Adding bet:', amount, 'Current bet:', currentBet, 'Balance:', playerBalance);
             
             // Ensure currentBet is a number
-            if (typeof currentBet !== 'number') {
-                console.log('currentBet is not a number, setting to 0');
+            if (typeof currentBet !== 'number' || isNaN(currentBet)) {
                 currentBet = 0;
             }
             
@@ -848,7 +855,7 @@
                 console.log('Bet added successfully, new currentBet:', currentBet);
                 
                 updateBetDisplay();
-                updateButtonStates();
+                enableSpinButton();
                 
                 // Show visual feedback
                 const betDisplay = document.getElementById('bet-amount');
@@ -861,13 +868,10 @@
                     }, 500);
                 }
                 
-                // Show success message
                 showSuccess('Bet placed: $' + currentBet);
             } else {
-                console.log('Insufficient balance! Need:', currentBet + amount, 'Have:', playerBalance);
                 showError('Insufficient balance!');
             }
-            console.log('=== END ADD BET DEBUG ===');
         }
 
         function updateBetDisplay() {
@@ -877,26 +881,20 @@
         function clearBet() {
             currentBet = 0;
             updateBetDisplay();
-            updateButtonStates();
+            disableSpinButton();
+            console.log('Bet cleared');
         }
 
         async function spin() {
-            console.log('=== SPIN DEBUG ===');
-            console.log('Spin button clicked');
-            console.log('currentBet:', currentBet, 'Type:', typeof currentBet);
-            console.log('playerBalance:', playerBalance);
-            console.log('currentBet === 0:', currentBet === 0);
-            console.log('currentBet > 0:', currentBet > 0);
+            console.log('Spin button clicked - currentBet:', currentBet);
             
             if (currentBet === 0) {
-                console.log('No bet placed, showing error');
                 showError('Please place a bet first!');
                 return;
             }
             
-            console.log('Proceeding with spin, calling API...');
+            console.log('Proceeding with spin...');
             await makeApiCall('/spin', 'POST');
-            console.log('=== END SPIN DEBUG ===');
         }
 
         function toggleAutoSpin() {
@@ -969,23 +967,12 @@
             }, 2000);
         }
 
-        function testBet() {
-            console.log('=== TEST BET FUNCTION ===');
-            console.log('Before test bet - currentBet:', currentBet, 'Type:', typeof currentBet);
-            currentBet = 10;
-            console.log('After setting currentBet to 10:', currentBet);
-            updateBetDisplay();
-            updateButtonStates();
-            console.log('Test bet completed');
-            console.log('=== END TEST BET ===');
-        }
 
         // Load initial game state
         window.onload = function() {
             console.log('Page loaded, initializing slot machine');
-            console.log('Initial currentBet:', currentBet, 'Type:', typeof currentBet);
             updateBetDisplay();
-            updateButtonStates();
+            disableSpinButton();
             makeApiCall('/state');
         };
     </script>
