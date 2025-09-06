@@ -616,6 +616,13 @@
 
         async function makeApiCall(endpoint, method = 'GET', data = null) {
             try {
+                let url = `/blackjack${endpoint}`;
+                
+                // Add balance and bet as query parameters for GET requests
+                if (method === 'GET') {
+                    url += `?balance=${playerBalance}&bet=${currentBet}`;
+                }
+                
                 const options = {
                     method: method,
                     headers: {
@@ -625,9 +632,16 @@
                 
                 if (data) {
                     options.body = JSON.stringify(data);
+                } else if (method === 'POST') {
+                    // For POST requests, add balance and bet as form data
+                    const formData = new FormData();
+                    formData.append('balance', playerBalance);
+                    formData.append('bet', currentBet);
+                    options.body = formData;
+                    options.headers = {}; // Remove Content-Type for FormData
                 }
                 
-                const response = await fetch(`/blackjack${endpoint}`, options);
+                const response = await fetch(url, options);
                 const result = await response.json();
                 
                 if (result.success) {
@@ -650,6 +664,8 @@
                 playerBalance = gameState.playerBalance;
                 document.getElementById('balance').textContent = playerBalance;
                 document.getElementById('user-balance').textContent = playerBalance;
+                // Save to localStorage
+                localStorage.setItem('balance', playerBalance.toString());
             }
 
             // Update bet

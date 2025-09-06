@@ -533,11 +533,40 @@
             // Store in localStorage
             localStorage.setItem('username', username);
             localStorage.setItem('balance', balance);
+            localStorage.setItem('isLoggedIn', 'true');
             
             // Update display
             document.getElementById('user-balance').textContent = balance;
             
-            alert(`Welcome ${username}! Starting balance: $${balance}`);
+            // Hide login form and show welcome message
+            hideLoginForm();
+            showWelcomeMessage(username, balance);
+        }
+
+        function hideLoginForm() {
+            const loginForm = document.querySelector('.login-form');
+            if (loginForm) {
+                loginForm.style.display = 'none';
+            }
+        }
+
+        function showWelcomeMessage(username, balance) {
+            const heroSection = document.querySelector('.hero-section');
+            const welcomeDiv = document.createElement('div');
+            welcomeDiv.className = 'welcome-message';
+            welcomeDiv.innerHTML = `
+                <h2 style="color: #00ff96; margin-bottom: 1rem;">Welcome back, ${username}!</h2>
+                <p style="color: #a0a0a0; margin-bottom: 2rem;">Your balance: $${balance}</p>
+                <button class="btn btn-primary" onclick="logout()">Logout</button>
+            `;
+            heroSection.appendChild(welcomeDiv);
+        }
+
+        function logout() {
+            localStorage.removeItem('username');
+            localStorage.removeItem('balance');
+            localStorage.removeItem('isLoggedIn');
+            location.reload();
         }
 
         function playGame(url) {
@@ -551,15 +580,23 @@
 
         // Load saved data
         window.onload = function() {
+            const isLoggedIn = localStorage.getItem('isLoggedIn') === 'true';
             const savedBalance = localStorage.getItem('balance');
-            if (savedBalance) {
-                document.getElementById('user-balance').textContent = savedBalance;
-                document.getElementById('balance').value = savedBalance;
-            }
-            
             const savedUsername = localStorage.getItem('username');
-            if (savedUsername) {
-                document.getElementById('username').value = savedUsername;
+            
+            if (isLoggedIn && savedUsername && savedBalance) {
+                // User is already logged in
+                document.getElementById('user-balance').textContent = savedBalance;
+                hideLoginForm();
+                showWelcomeMessage(savedUsername, savedBalance);
+            } else {
+                // Show login form
+                if (savedBalance) {
+                    document.getElementById('balance').value = savedBalance;
+                }
+                if (savedUsername) {
+                    document.getElementById('username').value = savedUsername;
+                }
             }
         };
     </script>

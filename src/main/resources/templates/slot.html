@@ -699,11 +699,17 @@
         let autoSpinActive = false;
         let autoSpinInterval = null;
 
-        // Get balance from URL parameter
+        // Get balance from URL parameter or localStorage
         const urlParams = new URLSearchParams(window.location.search);
         const balanceParam = urlParams.get('balance');
         if (balanceParam) {
             playerBalance = parseInt(balanceParam);
+        } else {
+            // Try to load from localStorage
+            const savedBalance = localStorage.getItem('balance');
+            if (savedBalance) {
+                playerBalance = parseInt(savedBalance);
+            }
         }
 
         async function makeApiCall(endpoint, method = 'GET', data = null) {
@@ -748,6 +754,8 @@
             if (gameState.playerBalance !== undefined) {
                 playerBalance = gameState.playerBalance;
                 updateBalanceDisplay();
+                // Save to localStorage
+                localStorage.setItem('balance', playerBalance.toString());
             }
             
             if (gameState.currentBet !== undefined) {
