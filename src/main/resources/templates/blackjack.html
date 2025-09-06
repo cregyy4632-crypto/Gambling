@@ -13,11 +13,13 @@
 
         body {
             font-family: 'Arial', sans-serif;
-            background: linear-gradient(135deg, #0f4c3a, #1a5f4a, #2d5a3d);
+            background: linear-gradient(135deg, #0a4d2e, #0f6b3a, #1a7a47);
             color: white;
             min-height: 100vh;
             display: flex;
             flex-direction: column;
+            margin: 0;
+            padding: 0;
         }
 
         .navbar {
@@ -71,16 +73,64 @@
             flex-direction: column;
             align-items: center;
             padding: 20px;
+            background: radial-gradient(ellipse at center, #0f4c3a 0%, #0a3d2a 100%);
         }
 
-        .container {
-            max-width: 800px;
+        .casino-table {
             width: 100%;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 20px;
-            padding: 30px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-            backdrop-filter: blur(10px);
+            max-width: 1000px;
+            background: linear-gradient(135deg, #0d5d2a, #0f6b3a);
+            border-radius: 30px;
+            padding: 40px;
+            box-shadow: 
+                0 0 50px rgba(0, 0, 0, 0.5),
+                inset 0 0 50px rgba(255, 255, 255, 0.1);
+            border: 8px solid #8b4513;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .casino-table::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: 
+                radial-gradient(circle at 20% 20%, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+                radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            pointer-events: none;
+        }
+
+        .table-header {
+            text-align: center;
+            margin-bottom: 30px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .table-title {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #ffd700;
+            text-shadow: 3px 3px 0 #000;
+            margin-bottom: 10px;
+        }
+
+        .table-subtitle {
+            font-size: 1.2rem;
+            color: #e0e0e0;
+            opacity: 0.9;
+        }
+
+        .balance-display {
+            font-size: 1.1rem;
+            color: #ffd700;
+            font-weight: bold;
+            margin-top: 10px;
+            text-shadow: 2px 2px 0 #000;
         }
 
         h1 {
@@ -90,11 +140,86 @@
             text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
         }
 
-        .game-area {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 30px;
+        .betting-area {
+            display: flex;
+            justify-content: center;
+            align-items: center;
             margin-bottom: 30px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .betting-circle {
+            width: 120px;
+            height: 120px;
+            border: 4px dashed #ffd700;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: rgba(0, 0, 0, 0.3);
+            position: relative;
+            margin: 0 20px;
+        }
+
+        .bet-amount {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #ffd700;
+            text-shadow: 2px 2px 0 #000;
+        }
+
+        .chips-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .chip {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: 3px solid #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+
+        .chip:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.4);
+        }
+
+        .chip-1 { background: #ff6b6b; color: white; }
+        .chip-5 { background: #4ecdc4; color: white; }
+        .chip-10 { background: #45b7d1; color: white; }
+        .chip-25 { background: #f9ca24; color: #333; }
+        .chip-50 { background: #6c5ce7; color: white; }
+        .chip-100 { background: #a29bfe; color: white; }
+
+        .game-area {
+            display: flex;
+            flex-direction: column;
+            gap: 40px;
+            margin-bottom: 30px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .dealer-area {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .player-area {
+            text-align: center;
         }
 
         .hand-container {
@@ -124,19 +249,22 @@
         .card {
             background: white;
             color: #333;
-            padding: 15px 10px;
-            border-radius: 12px;
+            padding: 12px 8px;
+            border-radius: 8px;
             font-weight: bold;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-            min-width: 80px;
-            min-height: 120px;
+            box-shadow: 
+                0 2px 8px rgba(0, 0, 0, 0.3),
+                0 0 0 1px rgba(0, 0, 0, 0.1);
+            width: 70px;
+            height: 100px;
             text-align: center;
             display: flex;
             flex-direction: column;
             justify-content: space-between;
             position: relative;
-            border: 2px solid #ddd;
-            transition: transform 0.3s ease;
+            border: 1px solid #ccc;
+            transition: all 0.3s ease;
+            margin: 0 5px;
         }
         
         .card:hover {
@@ -337,45 +465,74 @@
     </nav>
 
     <main class="main-content">
-        <div class="container">
-        <h1>🃏 Blackjack Game</h1>
-        
-        <div class="loading" id="loading">
-            <div class="spinner"></div>
-            <p>Loading...</p>
-        </div>
-
-        <div id="error-message" class="error" style="display: none;"></div>
-        <div id="success-message" class="success" style="display: none;"></div>
-
-        <div class="game-status" id="game-status">Click "New Game" to start playing!</div>
-
-        <div class="game-area">
-            <div class="hand-container">
-                <div class="hand-title">Dealer</div>
-                <div class="cards-display" id="dealer-cards">No cards</div>
-                <div class="hand-value" id="dealer-value">Value: 0</div>
+        <div class="casino-table">
+            <div class="table-header">
+                <div class="table-title">🃏 Blackjack</div>
+                <div class="table-subtitle">Beat the dealer to 21!</div>
+                <div class="balance-display">Balance: $<span id="balance">1000</span></div>
+            </div>
+            
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>Loading...</p>
             </div>
 
-            <div class="hand-container">
-                <div class="hand-title">Player</div>
-                <div class="cards-display" id="player-cards">No cards</div>
-                <div class="hand-value" id="player-value">Value: 0</div>
-            </div>
-        </div>
+            <div id="error-message" class="error" style="display: none;"></div>
+            <div id="success-message" class="success" style="display: none;"></div>
 
-        <div class="controls">
-            <button id="new-game-btn" class="btn-primary" onclick="startNewGame()">New Game</button>
-            <button id="hit-btn" class="btn-secondary" onclick="hit()" disabled>Hit</button>
-            <button id="stand-btn" class="btn-warning" onclick="stand()" disabled>Stand</button>
-            <button id="reset-btn" class="btn-primary" onclick="resetGame()">Reset</button>
-        </div>
+            <!-- Betting Area -->
+            <div class="betting-area">
+                <div class="betting-circle">
+                    <div class="bet-amount" id="bet-amount">$0</div>
+                </div>
+            </div>
+
+            <!-- Chips -->
+            <div class="chips-container">
+                <div class="chip chip-1" onclick="addBet(1)">$1</div>
+                <div class="chip chip-5" onclick="addBet(5)">$5</div>
+                <div class="chip chip-10" onclick="addBet(10)">$10</div>
+                <div class="chip chip-25" onclick="addBet(25)">$25</div>
+                <div class="chip chip-50" onclick="addBet(50)">$50</div>
+                <div class="chip chip-100" onclick="addBet(100)">$100</div>
+            </div>
+
+            <!-- Game Status -->
+            <div class="game-status" id="game-status">Place your bet and click Deal!</div>
+
+            <!-- Game Area -->
+            <div class="game-area">
+                <!-- Dealer Area -->
+                <div class="dealer-area">
+                    <div class="hand-title">Dealer</div>
+                    <div class="cards-display" id="dealer-cards">No cards</div>
+                    <div class="hand-value" id="dealer-value">Value: 0</div>
+                </div>
+
+                <!-- Player Area -->
+                <div class="player-area">
+                    <div class="hand-title">You</div>
+                    <div class="cards-display" id="player-cards">No cards</div>
+                    <div class="hand-value" id="player-value">Value: 0</div>
+                </div>
+            </div>
+
+            <!-- Game Controls -->
+            <div class="controls">
+                <button id="deal-btn" class="btn-primary" onclick="dealCards()">Deal</button>
+                <button id="hit-btn" class="btn-secondary" onclick="hit()" disabled>Hit</button>
+                <button id="stand-btn" class="btn-warning" onclick="stand()" disabled>Stand</button>
+                <button id="double-btn" class="btn-primary" onclick="doubleDown()" disabled>Double</button>
+                <button id="new-game-btn" class="btn-primary" onclick="startNewGame()">New Game</button>
+            </div>
         </div>
     </main>
 
     <script>
         const API_BASE = '/api/blackjack';
         let gameState = null;
+        let currentBet = 0;
+        let playerBalance = 1000; // Starting balance
 
         function showLoading() {
             document.getElementById('loading').style.display = 'block';
@@ -442,12 +599,24 @@
                 statusDiv.textContent = state.gameResult;
                 statusDiv.className = 'game-status ' + (state.gameResult.includes('win') ? 'win' : 
                     state.gameResult.includes('lose') ? 'lose' : 'tie');
+                
+                // Update balance based on result
+                if (state.gameResult.includes('win')) {
+                    playerBalance += currentBet * 2; // Win pays 1:1
+                } else if (state.gameResult.includes('lose')) {
+                    playerBalance -= currentBet; // Lose the bet
+                }
+                updateBalance();
             } else if (state.playerBust) {
                 statusDiv.textContent = '💥 You busted! Dealer wins.';
                 statusDiv.className = 'game-status lose';
+                playerBalance -= currentBet;
+                updateBalance();
             } else if (state.dealerBust) {
                 statusDiv.textContent = '🎉 Dealer busted! You win!';
                 statusDiv.className = 'game-status win';
+                playerBalance += currentBet * 2;
+                updateBalance();
             } else if (state.roundOver) {
                 statusDiv.textContent = 'Round over.';
                 statusDiv.className = 'game-status';
@@ -455,26 +624,38 @@
                 statusDiv.textContent = '🎯 Game in progress. Make your move!';
                 statusDiv.className = 'game-status';
             } else {
-                statusDiv.textContent = '🎰 Click "New Game" to start playing!';
+                statusDiv.textContent = '🎰 Place your bet and click Deal!';
                 statusDiv.className = 'game-status';
             }
 
             // Update button states
+            const dealBtn = document.getElementById('deal-btn');
             const hitBtn = document.getElementById('hit-btn');
             const standBtn = document.getElementById('stand-btn');
+            const doubleBtn = document.getElementById('double-btn');
             const newGameBtn = document.getElementById('new-game-btn');
-            const resetBtn = document.getElementById('reset-btn');
 
             if (state.gameStarted && !state.roundOver) {
+                // Game in progress
+                dealBtn.disabled = true;
                 hitBtn.disabled = false;
                 standBtn.disabled = false;
+                doubleBtn.disabled = false;
                 newGameBtn.disabled = true;
-                resetBtn.disabled = false;
-            } else {
+            } else if (state.gameStarted && state.roundOver) {
+                // Round over
+                dealBtn.disabled = true;
                 hitBtn.disabled = true;
                 standBtn.disabled = true;
+                doubleBtn.disabled = true;
                 newGameBtn.disabled = false;
-                resetBtn.disabled = !state.gameStarted;
+            } else {
+                // No game started
+                dealBtn.disabled = currentBet === 0;
+                hitBtn.disabled = true;
+                standBtn.disabled = true;
+                doubleBtn.disabled = true;
+                newGameBtn.disabled = false;
             }
         }
 
@@ -507,8 +688,49 @@
             }
         }
 
-        async function startNewGame() {
+        function addBet(amount) {
+            if (currentBet + amount <= playerBalance) {
+                currentBet += amount;
+                updateBetDisplay();
+            } else {
+                showError('Insufficient balance!');
+            }
+        }
+
+        function updateBetDisplay() {
+            document.getElementById('bet-amount').textContent = '$' + currentBet;
+        }
+
+        function updateBalance() {
+            document.getElementById('balance').textContent = playerBalance;
+        }
+
+        function clearBet() {
+            currentBet = 0;
+            updateBetDisplay();
+        }
+
+        async function dealCards() {
+            if (currentBet === 0) {
+                showError('Please place a bet first!');
+                return;
+            }
             await makeApiCall('/start', 'POST');
+        }
+
+        async function startNewGame() {
+            clearBet();
+            await makeApiCall('/reset', 'POST');
+        }
+
+        function doubleDown() {
+            if (currentBet * 2 <= playerBalance) {
+                currentBet *= 2;
+                updateBetDisplay();
+                hit();
+            } else {
+                showError('Insufficient balance to double down!');
+            }
         }
 
         async function hit() {
