@@ -1,3 +1,6 @@
+# Use OpenJDK 17 as base image
+FROM openjdk:17-jdk-slim
+
 # Set the working directory inside the container
 WORKDIR /app
 
@@ -23,5 +26,5 @@ EXPOSE 8080
 # Set environment variable for port (Optional, but good practice)
 ENV PORT=8080
 
-# Run the application (MISSING ENTRYPOINT/CMD)
+# Run the application
 CMD ["sh", "-c", "java -jar target/*.jar --server.port=$PORT"]
