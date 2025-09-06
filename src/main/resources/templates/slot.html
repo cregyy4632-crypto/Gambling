@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fishing Frenzy Slot Machine - Epic Gambling By IC</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #0f4c75, #1e3c72, #2a5298);
+            min-height: 100vh;
+            color: white;
+            overflow-x: hidden;
+        }
+
+        .navbar {
+            background: rgba(0, 0, 0, 0.8);
+            padding: 1rem 0;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 2rem;
+        }
+
+        .logo {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #ffd700;
+            text-decoration: none;
+        }
+
+        .nav-links {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .nav-links a:hover {
+            background: rgba(255, 215, 0, 0.2);
+            color: #ffd700;
+        }
+
+        .main-content {
+            margin-top: 80px;
+            padding: 2rem;
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .game-container {
+            background: linear-gradient(145deg, #1a1a2e, #16213e);
+            border-radius: 20px;
+            padding: 2rem;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            border: 3px solid #ffd700;
+        }
+
+        .game-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .game-title {
+            font-size: 2.5rem;
+            color: #ffd700;
+            margin-bottom: 0.5rem;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .game-subtitle {
+            font-size: 1.2rem;
+            color: #87ceeb;
+            margin-bottom: 1rem;
+        }
+
+        .balance-display {
+            background: linear-gradient(45deg, #2c5530, #3d7c47);
+            padding: 1rem 2rem;
+            border-radius: 15px;
+            display: inline-block;
+            font-size: 1.3rem;
+            font-weight: bold;
+            border: 2px solid #4caf50;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .slot-machine {
+            background: linear-gradient(145deg, #2c1810, #3d2817);
+            border: 5px solid #8b4513;
+            border-radius: 20px;
+            padding: 2rem;
+            margin: 2rem 0;
+            box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.5);
+        }
+
+        .reels-container {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        .reel {
+            background: linear-gradient(145deg, #1a1a2e, #16213e);
+            border: 3px solid #ffd700;
+            border-radius: 15px;
+            padding: 1rem;
+            min-width: 120px;
+            min-height: 360px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-around;
+            align-items: center;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        .reel-symbol {
+            font-size: 3rem;
+            padding: 0.5rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            min-width: 80px;
+            min-height: 80px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .reel-symbol.winning {
+            background: linear-gradient(45deg, #ffd700, #ffed4e);
+            color: #000;
+            transform: scale(1.1);
+            box-shadow: 0 0 20px rgba(255, 215, 0, 0.8);
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1.1); }
+            50% { transform: scale(1.2); }
+        }
+
+        .betting-area {
+            background: linear-gradient(145deg, #1a1a2e, #16213e);
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 2rem 0;
+            border: 2px solid #ffd700;
+        }
+
+        .bet-controls {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .bet-amount {
+            background: linear-gradient(45deg, #2c5530, #3d7c47);
+            padding: 1rem 2rem;
+            border-radius: 10px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border: 2px solid #4caf50;
+            min-width: 120px;
+            text-align: center;
+        }
+
+        .bet-chips {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .chip {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: 3px solid #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .chip:hover {
+            transform: scale(1.1);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.4);
+        }
+
+        .chip-5 { background: linear-gradient(45deg, #ff6b6b, #ee5a52); }
+        .chip-10 { background: linear-gradient(45deg, #4ecdc4, #44a08d); }
+        .chip-25 { background: linear-gradient(45deg, #45b7d1, #96c93d); }
+        .chip-50 { background: linear-gradient(45deg, #f9ca24, #f0932b); }
+        .chip-100 { background: linear-gradient(45deg, #6c5ce7, #a29bfe); }
+        .chip-500 { background: linear-gradient(45deg, #fd79a8, #e84393); }
+
+        .game-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin: 2rem 0;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 1rem 2rem;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .btn-spin {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a52);
+            color: white;
+            font-size: 1.3rem;
+            padding: 1.2rem 3rem;
+        }
+
+        .btn-spin:hover:not(:disabled) {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(238, 90, 82, 0.4);
+        }
+
+        .btn-bet {
+            background: linear-gradient(45deg, #4ecdc4, #44a08d);
+            color: white;
+        }
+
+        .btn-bet:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(68, 160, 141, 0.4);
+        }
+
+        .btn-reset {
+            background: linear-gradient(45deg, #f9ca24, #f0932b);
+            color: #000;
+        }
+
+        .btn-reset:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(240, 147, 43, 0.4);
+        }
+
+        .game-status {
+            text-align: center;
+            font-size: 1.2rem;
+            margin: 1rem 0;
+            padding: 1rem;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            font-size: 1.2rem;
+            color: #ffd700;
+            margin: 1rem 0;
+        }
+
+        .error {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a52);
+            color: white;
+            padding: 1rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        .winning-message {
+            background: linear-gradient(45deg, #4caf50, #45b7d1);
+            color: white;
+            padding: 1rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+            animation: celebrate 2s infinite;
+        }
+
+        @keyframes celebrate {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .paytable {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin: 2rem 0;
+            border: 2px solid rgba(255, 215, 0, 0.3);
+        }
+
+        .paytable h3 {
+            color: #ffd700;
+            margin-bottom: 1rem;
+            text-align: center;
+        }
+
+        .paytable-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .paytable-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0.5rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+        }
+
+        .symbol {
+            font-size: 1.5rem;
+        }
+
+        .multiplier {
+            color: #ffd700;
+            font-weight: bold;
+        }
+
+        @media (max-width: 768px) {
+            .reels-container {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .reel {
+                min-width: 100px;
+                min-height: 300px;
+            }
+            
+            .reel-symbol {
+                font-size: 2.5rem;
+                min-width: 60px;
+                min-height: 60px;
+            }
+            
+            .bet-controls {
+                flex-direction: column;
+            }
+            
+            .game-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <div class="nav-container">
+            <a href="/" class="logo">🎰 Epic Gambling By IC</a>
+            <ul class="nav-links">
+                <li><a href="/">Home</a></li>
+                <li><a href="/blackjack">Blackjack</a></li>
+                <li><a href="/slot" class="active">Fishing Frenzy</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <div class="main-content">
+        <div class="game-container">
+            <div class="game-header">
+                <h1 class="game-title">🎣 Fishing Frenzy Slot Machine</h1>
+                <p class="game-subtitle">Cast your line and reel in the big wins!</p>
+                <div class="balance-display">
+                    Balance: $<span id="balance">1000</span>
+                </div>
+            </div>
+
+            <div class="slot-machine">
+                <div class="reels-container">
+                    <div class="reel" id="reel1">
+                        <div class="reel-symbol">🎰</div>
+                        <div class="reel-symbol">🎰</div>
+                        <div class="reel-symbol">🎰</div>
+                    </div>
+                    <div class="reel" id="reel2">
+                        <div class="reel-symbol">🎰</div>
+                        <div class="reel-symbol">🎰</div>
+                        <div class="reel-symbol">🎰</div>
+                    </div>
+                    <div class="reel" id="reel3">
+                        <div class="reel-symbol">🎰</div>
+                        <div class="reel-symbol">🎰</div>
+                        <div class="reel-symbol">🎰</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="betting-area">
+                <div class="bet-controls">
+                    <div class="bet-amount">
+                        Bet: $<span id="bet-amount">0</span>
+                    </div>
+                    <div class="bet-chips">
+                        <div class="chip chip-5" onclick="addBet(5)">$5</div>
+                        <div class="chip chip-10" onclick="addBet(10)">$10</div>
+                        <div class="chip chip-25" onclick="addBet(25)">$25</div>
+                        <div class="chip chip-50" onclick="addBet(50)">$50</div>
+                        <div class="chip chip-100" onclick="addBet(100)">$100</div>
+                        <div class="chip chip-500" onclick="addBet(500)">$500</div>
+                    </div>
+                </div>
+                
+                <div class="game-buttons">
+                    <button class="btn btn-bet" onclick="clearBet()">Clear Bet</button>
+                    <button class="btn btn-spin" id="spin-btn" onclick="spin()">🎣 SPIN</button>
+                    <button class="btn btn-reset" onclick="resetGame()">New Game</button>
+                </div>
+            </div>
+
+            <div class="game-status" id="game-status">
+                🎰 Place your bet and click SPIN to start fishing!
+            </div>
+
+            <div class="loading" id="loading">
+                🎣 Reeling in your catch...
+            </div>
+
+            <div class="paytable">
+                <h3>🎣 Paytable - Fishing Frenzy</h3>
+                <div class="paytable-grid">
+                    <div class="paytable-item">
+                        <span class="symbol">🐟🐟🐟</span>
+                        <span class="multiplier">1x</span>
+                    </div>
+                    <div class="paytable-item">
+                        <span class="symbol">🦈🦈🦈</span>
+                        <span class="multiplier">2x</span>
+                    </div>
+                    <div class="paytable-item">
+                        <span class="symbol">🐠🐠🐠</span>
+                        <span class="multiplier">3x</span>
+                    </div>
+                    <div class="paytable-item">
+                        <span class="symbol">🦑🦑🦑</span>
+                        <span class="multiplier">4x</span>
+                    </div>
+                    <div class="paytable-item">
+                        <span class="symbol">🦀🦀🦀</span>
+                        <span class="multiplier">5x</span>
+                    </div>
+                    <div class="paytable-item">
+                        <span class="symbol">🐙🐙🐙</span>
+                        <span class="multiplier">6x</span>
+                    </div>
+                    <div class="paytable-item">
+                        <span class="symbol">⚓⚓⚓</span>
+                        <span class="multiplier">8x</span>
+                    </div>
+                    <div class="paytable-item">
+                        <span class="symbol">💎💎💎</span>
+                        <span class="multiplier">10x</span>
+                    </div>
+                    <div class="paytable-item">
+                        <span class="symbol">🎣🎣🎣</span>
+                        <span class="multiplier">15x</span>
+                    </div>
+                    <div class="paytable-item">
+                        <span class="symbol">💰💰💰</span>
+                        <span class="multiplier">25x</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let gameState = null;
+        let playerBalance = 1000;
+        let currentBet = 0;
+
+        // Get balance from URL parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        const balanceParam = urlParams.get('balance');
+        if (balanceParam) {
+            playerBalance = parseInt(balanceParam);
+        }
+
+        async function makeApiCall(endpoint, method = 'GET', data = null) {
+            try {
+                showLoading();
+                
+                const options = {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                };
+                
+                if (data) {
+                    options.body = JSON.stringify(data);
+                }
+                
+                const response = await fetch(`/slot${endpoint}`, options);
+                const result = await response.json();
+                
+                hideLoading();
+                
+                if (result.success) {
+                    gameState = result.data;
+                    updateGameDisplay();
+                } else {
+                    showError(result.message);
+                }
+            } catch (error) {
+                hideLoading();
+                showError('Network error: ' + error.message);
+            }
+        }
+
+        function updateGameDisplay() {
+            if (!gameState) return;
+
+            // Update balance
+            playerBalance = gameState.playerBalance;
+            currentBet = gameState.currentBet;
+            
+            document.getElementById('balance').textContent = playerBalance;
+            document.getElementById('bet-amount').textContent = currentBet;
+
+            // Update reels
+            if (gameState.reel1 && gameState.reel2 && gameState.reel3) {
+                updateReels(gameState.reel1, gameState.reel2, gameState.reel3);
+            }
+
+            // Update status message
+            const statusDiv = document.getElementById('game-status');
+            statusDiv.textContent = gameState.message || '🎰 Place your bet and click SPIN!';
+            
+            if (gameState.totalWinnings > 0) {
+                statusDiv.className = 'winning-message';
+            } else {
+                statusDiv.className = 'game-status';
+            }
+
+            // Update button states
+            updateButtonStates();
+        }
+
+        function updateReels(reel1, reel2, reel3) {
+            const reels = [reel1, reel2, reel3];
+            
+            for (let i = 0; i < 3; i++) {
+                const reelElement = document.getElementById(`reel${i + 1}`);
+                const symbols = reelElement.querySelectorAll('.reel-symbol');
+                
+                for (let j = 0; j < 3; j++) {
+                    symbols[j].textContent = reels[i][j];
+                    symbols[j].classList.remove('winning');
+                }
+            }
+            
+            // Check for winning combinations and highlight them
+            checkWinningCombinations(reel1, reel2, reel3);
+        }
+
+        function checkWinningCombinations(reel1, reel2, reel3) {
+            // Check horizontal wins
+            for (let row = 0; row < 3; row++) {
+                if (reel1[row] === reel2[row] && reel2[row] === reel3[row]) {
+                    highlightWin(reel1[row], row);
+                }
+            }
+            
+            // Check diagonal wins
+            if (reel1[0] === reel2[1] && reel2[1] === reel3[2]) {
+                highlightDiagonalWin(0, 1, 2);
+            }
+            
+            if (reel1[2] === reel2[1] && reel2[1] === reel3[0]) {
+                highlightDiagonalWin(2, 1, 0);
+            }
+        }
+
+        function highlightWin(symbol, row) {
+            const reels = [document.getElementById('reel1'), document.getElementById('reel2'), document.getElementById('reel3')];
+            reels.forEach(reel => {
+                const symbols = reel.querySelectorAll('.reel-symbol');
+                symbols[row].classList.add('winning');
+            });
+        }
+
+        function highlightDiagonalWin(pos1, pos2, pos3) {
+            const reels = [document.getElementById('reel1'), document.getElementById('reel2'), document.getElementById('reel3')];
+            const positions = [pos1, pos2, pos3];
+            
+            reels.forEach((reel, index) => {
+                const symbols = reel.querySelectorAll('.reel-symbol');
+                symbols[positions[index]].classList.add('winning');
+            });
+        }
+
+        function updateButtonStates() {
+            const spinBtn = document.getElementById('spin-btn');
+            
+            if (currentBet > 0 && !gameState.gameStarted) {
+                spinBtn.disabled = false;
+            } else if (gameState.gameStarted && gameState.roundOver) {
+                spinBtn.disabled = false;
+            } else {
+                spinBtn.disabled = true;
+            }
+        }
+
+        function addBet(amount) {
+            if (currentBet + amount <= playerBalance) {
+                currentBet += amount;
+                updateBetDisplay();
+                updateButtonStates();
+            } else {
+                showError('Insufficient balance!');
+            }
+        }
+
+        function updateBetDisplay() {
+            document.getElementById('bet-amount').textContent = currentBet;
+        }
+
+        function clearBet() {
+            currentBet = 0;
+            updateBetDisplay();
+            updateButtonStates();
+        }
+
+        async function spin() {
+            if (currentBet === 0) {
+                showError('Please place a bet first!');
+                return;
+            }
+            
+            await makeApiCall('/spin', 'POST');
+        }
+
+        async function resetGame() {
+            clearBet();
+            await makeApiCall('/reset', 'POST');
+        }
+
+        function showLoading() {
+            document.getElementById('loading').style.display = 'block';
+        }
+
+        function hideLoading() {
+            document.getElementById('loading').style.display = 'none';
+        }
+
+        function showError(message) {
+            const statusDiv = document.getElementById('game-status');
+            statusDiv.textContent = '❌ ' + message;
+            statusDiv.className = 'error';
+        }
+
+        // Load initial game state
+        window.onload = function() {
+            updateBetDisplay();
+            updateButtonStates();
+            makeApiCall('/state');
+        };
+    </script>
+</body>
+</html>

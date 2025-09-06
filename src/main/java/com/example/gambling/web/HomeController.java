@@ -14,6 +14,11 @@ public class HomeController {
     public String blackjack() {
         return "blackjack";
     }
+    
+    @GetMapping("/slot")
+    public String slot() {
+        return "slot";
+    }
 }
 
 

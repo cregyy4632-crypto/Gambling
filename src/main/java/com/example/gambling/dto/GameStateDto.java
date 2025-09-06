@@ -3,10 +3,11 @@ package com.example.gambling.dto;
 import com.example.gambling.model.Card;
 import com.example.gambling.model.Hand;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class GameStateDto {
-    private List<Card> playerCards;
-    private List<Card> dealerCards;
+    private List<CardDto> playerCards;
+    private List<CardDto> dealerCards;
     private int playerValue;
     private int dealerValue;
     private boolean playerBust;
@@ -14,12 +15,21 @@ public class GameStateDto {
     private boolean roundOver;
     private String gameResult;
     private boolean gameStarted;
+    
+    // Slot machine fields
+    private int playerBalance;
+    private int currentBet;
+    private int totalWinnings;
+    private String[] reel1;
+    private String[] reel2;
+    private String[] reel3;
+    private String message;
 
     public GameStateDto() {}
 
     public GameStateDto(Hand player, Hand dealer, boolean roundOver, String gameResult, boolean gameStarted) {
-        this.playerCards = (player != null) ? player.getCards() : null;
-        this.dealerCards = (dealer != null) ? dealer.getCards() : null;
+        this.playerCards = (player != null) ? player.getCards().stream().map(CardDto::new).collect(Collectors.toList()) : null;
+        this.dealerCards = (dealer != null) ? dealer.getCards().stream().map(CardDto::new).collect(Collectors.toList()) : null;
         this.playerValue = (player != null) ? player.getValue() : 0;
         this.dealerValue = (dealer != null) ? dealer.getValue() : 0;
         this.playerBust = (player != null) ? player.isBust() : false;
@@ -30,11 +40,11 @@ public class GameStateDto {
     }
 
     // Getters and Setters
-    public List<Card> getPlayerCards() { return playerCards; }
-    public void setPlayerCards(List<Card> playerCards) { this.playerCards = playerCards; }
+    public List<CardDto> getPlayerCards() { return playerCards; }
+    public void setPlayerCards(List<CardDto> playerCards) { this.playerCards = playerCards; }
 
-    public List<Card> getDealerCards() { return dealerCards; }
-    public void setDealerCards(List<Card> dealerCards) { this.dealerCards = dealerCards; }
+    public List<CardDto> getDealerCards() { return dealerCards; }
+    public void setDealerCards(List<CardDto> dealerCards) { this.dealerCards = dealerCards; }
 
     public int getPlayerValue() { return playerValue; }
     public void setPlayerValue(int playerValue) { this.playerValue = playerValue; }
@@ -56,4 +66,26 @@ public class GameStateDto {
 
     public boolean isGameStarted() { return gameStarted; }
     public void setGameStarted(boolean gameStarted) { this.gameStarted = gameStarted; }
+
+    // Slot machine getters and setters
+    public int getPlayerBalance() { return playerBalance; }
+    public void setPlayerBalance(int playerBalance) { this.playerBalance = playerBalance; }
+
+    public int getCurrentBet() { return currentBet; }
+    public void setCurrentBet(int currentBet) { this.currentBet = currentBet; }
+
+    public int getTotalWinnings() { return totalWinnings; }
+    public void setTotalWinnings(int totalWinnings) { this.totalWinnings = totalWinnings; }
+
+    public String[] getReel1() { return reel1; }
+    public void setReel1(String[] reel1) { this.reel1 = reel1; }
+
+    public String[] getReel2() { return reel2; }
+    public void setReel2(String[] reel2) { this.reel2 = reel2; }
+
+    public String[] getReel3() { return reel3; }
+    public void setReel3(String[] reel3) { this.reel3 = reel3; }
+
+    public String getMessage() { return message; }
+    public void setMessage(String message) { this.message = message; }
 }
