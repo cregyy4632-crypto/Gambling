@@ -300,6 +300,21 @@
             box-shadow: 0 6px 20px rgba(240, 147, 43, 0.4);
         }
 
+        .btn-auto {
+            background: linear-gradient(45deg, #6c5ce7, #a29bfe);
+            color: white;
+        }
+
+        .btn-auto:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(108, 92, 231, 0.4);
+        }
+
+        .btn-auto.active {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a52);
+            animation: pulse 1s infinite;
+        }
+
         .game-status {
             text-align: center;
             font-size: 1.2rem;
@@ -484,6 +499,7 @@
                 <div class="game-buttons">
                     <button class="btn btn-bet" onclick="clearBet()">Clear Bet</button>
                     <button class="btn btn-spin" id="spin-btn" onclick="spin()" disabled>🎣 SPIN</button>
+                    <button class="btn btn-auto" id="auto-spin-btn" onclick="toggleAutoSpin()" disabled>🔄 AUTO SPIN</button>
                 </div>
             </div>
 
@@ -555,6 +571,8 @@
         let gameState = null;
         let playerBalance = 1000;
         let currentBet = 0;
+        let autoSpinActive = false;
+        let autoSpinInterval = null;
 
         // Get balance from URL parameter
         const urlParams = new URLSearchParams(window.location.search);
@@ -749,24 +767,33 @@
 
         function updateButtonStates() {
             const spinBtn = document.getElementById('spin-btn');
+            const autoBtn = document.getElementById('auto-spin-btn');
             console.log('Updating button states - currentBet:', currentBet, 'gameState:', gameState);
             
             // Enable spin button if we have a bet and either no game state or game is not started or round is over
             if (currentBet > 0) {
                 if (!gameState || !gameState.gameStarted || gameState.roundOver) {
                     spinBtn.disabled = false;
-                    console.log('Spin button enabled - has bet and game ready');
+                    autoBtn.disabled = false;
+                    console.log('Buttons enabled - has bet and game ready');
                 } else {
                     spinBtn.disabled = true;
-                    console.log('Spin button disabled - game in progress');
+                    autoBtn.disabled = true;
+                    console.log('Buttons disabled - game in progress');
                 }
             } else {
                 spinBtn.disabled = true;
-                console.log('Spin button disabled - no bet placed');
+                autoBtn.disabled = true;
+                console.log('Buttons disabled - no bet placed');
             }
         }
 
         function resetGameState() {
+            // Stop auto-spin if active
+            if (autoSpinActive) {
+                stopAutoSpin();
+            }
+            
             // Reset the frontend game state without API call
             gameState = null;
             currentBet = 0;
@@ -793,13 +820,21 @@
 
         function addBet(amount) {
             console.log('Adding bet:', amount, 'Current bet:', currentBet, 'Balance:', playerBalance);
-            alert('Adding bet: $' + amount);
             
             if (currentBet + amount <= playerBalance) {
                 currentBet += amount;
                 updateBetDisplay();
                 updateButtonStates();
                 console.log('Bet added successfully, new currentBet:', currentBet);
+                
+                // Show visual feedback
+                const betDisplay = document.getElementById('bet-amount');
+                betDisplay.style.backgroundColor = '#4caf50';
+                betDisplay.style.color = 'white';
+                setTimeout(() => {
+                    betDisplay.style.backgroundColor = '';
+                    betDisplay.style.color = '';
+                }, 500);
             } else {
                 showError('Insufficient balance!');
             }
@@ -817,7 +852,6 @@
 
         async function spin() {
             console.log('Spin button clicked - currentBet:', currentBet, 'playerBalance:', playerBalance);
-            alert('Spin button clicked! Current bet: $' + currentBet);
             
             if (currentBet === 0) {
                 showError('Please place a bet first!');
@@ -825,6 +859,51 @@
             }
             
             await makeApiCall('/spin', 'POST');
+        }
+
+        function toggleAutoSpin() {
+            if (autoSpinActive) {
+                stopAutoSpin();
+            } else {
+                startAutoSpin();
+            }
+        }
+
+        function startAutoSpin() {
+            if (currentBet === 0) {
+                showError('Please place a bet first!');
+                return;
+            }
+            
+            autoSpinActive = true;
+            const autoBtn = document.getElementById('auto-spin-btn');
+            autoBtn.textContent = '⏹️ STOP AUTO';
+            autoBtn.classList.add('active');
+            
+            // Auto spin every 2 seconds
+            autoSpinInterval = setInterval(async () => {
+                if (autoSpinActive && currentBet > 0) {
+                    await makeApiCall('/spin', 'POST');
+                } else {
+                    stopAutoSpin();
+                }
+            }, 2000);
+            
+            console.log('Auto spin started');
+        }
+
+        function stopAutoSpin() {
+            autoSpinActive = false;
+            const autoBtn = document.getElementById('auto-spin-btn');
+            autoBtn.textContent = '🔄 AUTO SPIN';
+            autoBtn.classList.remove('active');
+            
+            if (autoSpinInterval) {
+                clearInterval(autoSpinInterval);
+                autoSpinInterval = null;
+            }
+            
+            console.log('Auto spin stopped');
         }
 
 
@@ -842,34 +921,12 @@
             statusDiv.className = 'error';
         }
 
-        // Test function to manually enable spin button
-        function testSpin() {
-            console.log('Test spin function called');
-            currentBet = 10;
-            updateBetDisplay();
-            updateButtonStates();
-            alert('Test: Bet set to $10, button should be enabled now');
-        }
-
         // Load initial game state
         window.onload = function() {
             console.log('Page loaded, initializing slot machine');
             updateBetDisplay();
             updateButtonStates();
             makeApiCall('/state');
-            
-            // Add test button for debugging
-            const testBtn = document.createElement('button');
-            testBtn.textContent = 'TEST SPIN';
-            testBtn.onclick = testSpin;
-            testBtn.style.margin = '10px';
-            testBtn.style.padding = '10px';
-            testBtn.style.backgroundColor = '#ff6b6b';
-            testBtn.style.color = 'white';
-            testBtn.style.border = 'none';
-            testBtn.style.borderRadius = '5px';
-            testBtn.style.cursor = 'pointer';
-            document.querySelector('.game-buttons').appendChild(testBtn);
         };
     </script>
 </body>
