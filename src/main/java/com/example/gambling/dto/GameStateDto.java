@@ -20,6 +20,8 @@ public class GameStateDto {
     private int playerBalance;
     private int currentBet;
     private int totalWinnings;
+    private int freeSpinsRemaining;
+    private boolean inFreeSpinsMode;
     private String[] reel1;
     private String[] reel2;
     private String[] reel3;
@@ -78,6 +80,12 @@ public class GameStateDto {
 
     public int getTotalWinnings() { return totalWinnings; }
     public void setTotalWinnings(int totalWinnings) { this.totalWinnings = totalWinnings; }
+
+    public int getFreeSpinsRemaining() { return freeSpinsRemaining; }
+    public void setFreeSpinsRemaining(int freeSpinsRemaining) { this.freeSpinsRemaining = freeSpinsRemaining; }
+
+    public boolean isInFreeSpinsMode() { return inFreeSpinsMode; }
+    public void setInFreeSpinsMode(boolean inFreeSpinsMode) { this.inFreeSpinsMode = inFreeSpinsMode; }
 
     public String[] getReel1() { return reel1; }
     public void setReel1(String[] reel1) { this.reel1 = reel1; }

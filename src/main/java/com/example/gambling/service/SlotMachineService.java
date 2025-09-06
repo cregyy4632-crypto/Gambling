@@ -14,10 +14,12 @@ public class SlotMachineService {
     private boolean gameStarted = false;
     private boolean roundOver = false;
     private int totalWinnings = 0;
+    private int freeSpinsRemaining = 0;
+    private boolean inFreeSpinsMode = false;
     
     // Fishing Frenzy symbols with their values and probabilities
     private final String[] SYMBOLS = {
-        "🐟", "🦈", "🐠", "🦑", "🦀", "🐙", "⚓", "💎", "🎣", "💰"
+        "🐟", "🦈", "🐠", "🦑", "🦀", "🐙", "⚓", "💎", "🎣", "💰", "🎰"
     };
     
     // Symbol values (multipliers)
@@ -35,6 +37,7 @@ public class SlotMachineService {
         SYMBOL_VALUES.put("💎", 10);   // Diamond - 10x
         SYMBOL_VALUES.put("🎣", 15);   // Fishing Rod - 15x
         SYMBOL_VALUES.put("💰", 25);   // Treasure - 25x
+        SYMBOL_VALUES.put("🎰", 0);    // Free Spins - 0x (triggers free spins)
     }
     
     public ApiResponse<GameStateDto> getState() {
@@ -44,6 +47,8 @@ public class SlotMachineService {
         state.setGameStarted(gameStarted);
         state.setRoundOver(roundOver);
         state.setTotalWinnings(totalWinnings);
+        state.setFreeSpinsRemaining(freeSpinsRemaining);
+        state.setInFreeSpinsMode(inFreeSpinsMode);
         state.setMessage("🎰 Fishing Frenzy Slot Machine Ready!");
         
         return new ApiResponse<>(true, "Game state retrieved", state);
@@ -78,12 +83,17 @@ public class SlotMachineService {
             return new ApiResponse<>(false, "Please set a bet first", null);
         }
         
-        if (currentBet > playerBalance) {
+        if (currentBet > playerBalance && !inFreeSpinsMode) {
             return new ApiResponse<>(false, "Insufficient balance", null);
         }
         
-        // Deduct bet from balance
-        playerBalance -= currentBet;
+        // Deduct bet from balance only if not in free spins mode
+        if (!inFreeSpinsMode) {
+            playerBalance -= currentBet;
+        } else {
+            // Decrease free spins counter
+            freeSpinsRemaining--;
+        }
         
         // Generate 5 reels with weighted probabilities
         String[] reel1 = generateReel();
@@ -92,12 +102,24 @@ public class SlotMachineService {
         String[] reel4 = generateReel();
         String[] reel5 = generateReel();
         
+        // Check for free spins trigger (3 or more free spins symbols)
+        int freeSpinsTriggered = checkFreeSpinsTrigger(reel1, reel2, reel3, reel4, reel5);
+        if (freeSpinsTriggered > 0) {
+            freeSpinsRemaining += 10; // Award 10 free spins
+            inFreeSpinsMode = true;
+        }
+        
         // Calculate winnings
         int winnings = calculateWinnings(reel1, reel2, reel3, reel4, reel5);
         totalWinnings = winnings;
         
         // Add winnings to balance
         playerBalance += winnings;
+        
+        // Check if free spins are over
+        if (inFreeSpinsMode && freeSpinsRemaining <= 0) {
+            inFreeSpinsMode = false;
+        }
         
         gameStarted = true;
         roundOver = true;
@@ -108,6 +130,8 @@ public class SlotMachineService {
         state.setGameStarted(gameStarted);
         state.setRoundOver(roundOver);
         state.setTotalWinnings(totalWinnings);
+        state.setFreeSpinsRemaining(freeSpinsRemaining);
+        state.setInFreeSpinsMode(inFreeSpinsMode);
         state.setReel1(reel1);
         state.setReel2(reel2);
         state.setReel3(reel3);
@@ -115,7 +139,11 @@ public class SlotMachineService {
         state.setReel5(reel5);
         
         String message;
-        if (winnings > 0) {
+        if (freeSpinsTriggered > 0) {
+            message = "🎰 FREE SPINS! You got 10 free spins! " + (winnings > 0 ? "Plus $" + winnings + " win!" : "");
+        } else if (inFreeSpinsMode) {
+            message = "🎰 FREE SPIN " + (10 - freeSpinsRemaining + 1) + "/10" + (winnings > 0 ? " - Won $" + winnings + "!" : "");
+        } else if (winnings > 0) {
             message = "🎉 You won $" + winnings + "! " + getWinMessage(reel1, reel2, reel3, reel4, reel5);
         } else {
             message = "😔 No win this time. Try again!";
@@ -131,6 +159,8 @@ public class SlotMachineService {
         gameStarted = false;
         roundOver = false;
         totalWinnings = 0;
+        freeSpinsRemaining = 0;
+        inFreeSpinsMode = false;
         
         GameStateDto state = new GameStateDto();
         state.setPlayerBalance(playerBalance);
@@ -138,6 +168,8 @@ public class SlotMachineService {
         state.setGameStarted(gameStarted);
         state.setRoundOver(roundOver);
         state.setTotalWinnings(totalWinnings);
+        state.setFreeSpinsRemaining(freeSpinsRemaining);
+        state.setInFreeSpinsMode(inFreeSpinsMode);
         state.setMessage("🎰 Fishing Frenzy Slot Machine Reset!");
         
         return new ApiResponse<>(true, "Game reset", state);
@@ -149,30 +181,48 @@ public class SlotMachineService {
         // Weighted probabilities - common symbols appear more often
         for (int i = 0; i < 3; i++) {
             double rand = Math.random();
-            if (rand < 0.3) {
-                reel[i] = "🐟"; // 30% chance
-            } else if (rand < 0.5) {
+            if (rand < 0.25) {
+                reel[i] = "🐟"; // 25% chance
+            } else if (rand < 0.45) {
                 reel[i] = "🦈"; // 20% chance
-            } else if (rand < 0.65) {
+            } else if (rand < 0.6) {
                 reel[i] = "🐠"; // 15% chance
-            } else if (rand < 0.75) {
+            } else if (rand < 0.7) {
                 reel[i] = "🦑"; // 10% chance
-            } else if (rand < 0.82) {
+            } else if (rand < 0.77) {
                 reel[i] = "🦀"; // 7% chance
-            } else if (rand < 0.87) {
+            } else if (rand < 0.82) {
                 reel[i] = "🐙"; // 5% chance
-            } else if (rand < 0.91) {
+            } else if (rand < 0.86) {
                 reel[i] = "⚓"; // 4% chance
-            } else if (rand < 0.94) {
+            } else if (rand < 0.89) {
                 reel[i] = "💎"; // 3% chance
-            } else if (rand < 0.97) {
+            } else if (rand < 0.92) {
                 reel[i] = "🎣"; // 3% chance
-            } else {
+            } else if (rand < 0.95) {
                 reel[i] = "💰"; // 3% chance
+            } else {
+                reel[i] = "🎰"; // 5% chance (free spins symbol)
             }
         }
         
         return reel;
+    }
+    
+    private int checkFreeSpinsTrigger(String[] reel1, String[] reel2, String[] reel3, String[] reel4, String[] reel5) {
+        int freeSpinsCount = 0;
+        
+        // Count free spins symbols across all reels
+        for (int row = 0; row < 3; row++) {
+            if (reel1[row].equals("🎰")) freeSpinsCount++;
+            if (reel2[row].equals("🎰")) freeSpinsCount++;
+            if (reel3[row].equals("🎰")) freeSpinsCount++;
+            if (reel4[row].equals("🎰")) freeSpinsCount++;
+            if (reel5[row].equals("🎰")) freeSpinsCount++;
+        }
+        
+        // Trigger free spins if 3 or more free spins symbols appear
+        return freeSpinsCount >= 3 ? freeSpinsCount : 0;
     }
     
     private int calculateWinnings(String[] reel1, String[] reel2, String[] reel3, String[] reel4, String[] reel5) {

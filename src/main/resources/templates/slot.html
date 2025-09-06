@@ -107,6 +107,19 @@
             font-weight: bold;
             border: 2px solid #4caf50;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            margin-right: 1rem;
+        }
+
+        .free-spins-display {
+            background: linear-gradient(45deg, #ff6b6b, #ee5a52);
+            padding: 1rem 2rem;
+            border-radius: 15px;
+            display: inline-block;
+            font-size: 1.3rem;
+            font-weight: bold;
+            border: 2px solid #ff6b6b;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            animation: pulse 2s infinite;
         }
 
         .slot-machine {
@@ -418,6 +431,9 @@
                 <div class="balance-display">
                     Balance: $<span id="balance">1000</span>
                 </div>
+                <div class="free-spins-display" id="free-spins-display" style="display: none;">
+                    🎰 Free Spins: <span id="free-spins-count">0</span>
+                </div>
             </div>
 
             <div class="slot-machine">
@@ -522,9 +538,14 @@
                         <span class="symbol">💰💰💰💰💰</span>
                         <span class="multiplier">50x</span>
                     </div>
+                    <div class="paytable-item">
+                        <span class="symbol">🎰🎰🎰 (3+)</span>
+                        <span class="multiplier">10 Free Spins!</span>
+                    </div>
                 </div>
                 <p style="text-align: center; margin-top: 1rem; color: #87ceeb;">
-                    4-reel matches pay 1x, 3-reel matches pay 0.5x
+                    4-reel matches pay 1x, 3-reel matches pay 0.5x<br>
+                    Get 3+ free spins symbols (🎰) to trigger 10 free spins!
                 </p>
             </div>
         </div>
@@ -583,6 +604,16 @@
             
             document.getElementById('balance').textContent = playerBalance;
             document.getElementById('bet-amount').textContent = currentBet;
+
+            // Update free spins display
+            const freeSpinsDisplay = document.getElementById('free-spins-display');
+            const freeSpinsCount = document.getElementById('free-spins-count');
+            if (gameState.freeSpinsRemaining > 0) {
+                freeSpinsDisplay.style.display = 'inline-block';
+                freeSpinsCount.textContent = gameState.freeSpinsRemaining;
+            } else {
+                freeSpinsDisplay.style.display = 'none';
+            }
 
             // Update reels
             if (gameState.reel1 && gameState.reel2 && gameState.reel3 && gameState.reel4 && gameState.reel5) {
@@ -738,6 +769,9 @@
                     symbol.classList.remove('winning');
                 });
             }
+            
+            // Hide free spins display
+            document.getElementById('free-spins-display').style.display = 'none';
             
             // Update status
             document.getElementById('game-status').textContent = '🎰 Place your bet and click SPIN!';
