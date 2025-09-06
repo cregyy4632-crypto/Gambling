@@ -440,12 +440,16 @@
 
         @keyframes dealCard {
             0% {
-                transform: translateY(-200px) rotateY(180deg) scale(0.5);
+                transform: translateY(-300px) rotateY(180deg) scale(0.3);
                 opacity: 0;
             }
-            50% {
-                transform: translateY(-100px) rotateY(90deg) scale(0.8);
-                opacity: 0.7;
+            30% {
+                transform: translateY(-150px) rotateY(90deg) scale(0.6);
+                opacity: 0.5;
+            }
+            70% {
+                transform: translateY(-50px) rotateY(0deg) scale(0.9);
+                opacity: 0.8;
             }
             100% {
                 transform: translateY(0) rotateY(0deg) scale(1);
@@ -455,13 +459,13 @@
 
         @keyframes flipCard {
             0% {
-                transform: rotateY(0deg);
+                transform: rotateY(0deg) scale(1);
             }
             50% {
-                transform: rotateY(90deg);
+                transform: rotateY(90deg) scale(1.1);
             }
             100% {
-                transform: rotateY(180deg);
+                transform: rotateY(180deg) scale(1);
             }
         }
 
@@ -657,6 +661,7 @@
         }
 
         function updateGameDisplay() {
+            console.log('Updating game display with gameState:', gameState);
             if (!gameState) return;
 
             // Update balance
@@ -675,8 +680,10 @@
             }
 
             // Update hands
-            updateHand('dealer', gameState.dealerHand);
-            updateHand('player', gameState.playerHand);
+            console.log('Dealer cards:', gameState.dealerCards);
+            console.log('Player cards:', gameState.playerCards);
+            updateHand('dealer', gameState.dealerCards);
+            updateHand('player', gameState.playerCards);
 
             // Update values
             document.getElementById('dealer-value').textContent = 
@@ -701,6 +708,8 @@
 
             // Auto-reset after round ends
             if (gameState.roundOver) {
+                // Flip dealer's first card if round just ended
+                flipDealerCard();
                 setTimeout(() => {
                     resetGameState();
                 }, 3000);
@@ -708,12 +717,17 @@
         }
 
         function updateHand(handType, cards) {
+            console.log(`Updating ${handType} hand:`, cards);
             const handElement = document.getElementById(`${handType}-hand`);
             handElement.innerHTML = '';
 
-            if (!cards || cards.length === 0) return;
+            if (!cards || cards.length === 0) {
+                console.log(`No cards for ${handType} hand`);
+                return;
+            }
 
             cards.forEach((card, index) => {
+                console.log(`Creating card ${index}:`, card);
                 const cardElement = createCardElement(card);
                 cardElement.classList.add('dealing');
                 cardElement.style.animationDelay = `${index * 0.2}s`;
@@ -840,6 +854,14 @@
             // Reset status
             document.getElementById('game-status').textContent = 'Place your bet and click Deal to start!';
             document.getElementById('game-status').className = 'game-status';
+        }
+
+        function flipDealerCard() {
+            const dealerHand = document.getElementById('dealer-hand');
+            const firstCard = dealerHand.querySelector('.card');
+            if (firstCard) {
+                firstCard.classList.add('flip');
+            }
         }
 
         function showError(message) {
