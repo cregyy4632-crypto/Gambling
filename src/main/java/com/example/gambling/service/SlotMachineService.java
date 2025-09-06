@@ -85,13 +85,15 @@ public class SlotMachineService {
         // Deduct bet from balance
         playerBalance -= currentBet;
         
-        // Generate 3 reels with weighted probabilities
+        // Generate 5 reels with weighted probabilities
         String[] reel1 = generateReel();
         String[] reel2 = generateReel();
         String[] reel3 = generateReel();
+        String[] reel4 = generateReel();
+        String[] reel5 = generateReel();
         
         // Calculate winnings
-        int winnings = calculateWinnings(reel1, reel2, reel3);
+        int winnings = calculateWinnings(reel1, reel2, reel3, reel4, reel5);
         totalWinnings = winnings;
         
         // Add winnings to balance
@@ -109,10 +111,12 @@ public class SlotMachineService {
         state.setReel1(reel1);
         state.setReel2(reel2);
         state.setReel3(reel3);
+        state.setReel4(reel4);
+        state.setReel5(reel5);
         
         String message;
         if (winnings > 0) {
-            message = "🎉 You won $" + winnings + "! " + getWinMessage(reel1, reel2, reel3);
+            message = "🎉 You won $" + winnings + "! " + getWinMessage(reel1, reel2, reel3, reel4, reel5);
         } else {
             message = "😔 No win this time. Try again!";
         }
@@ -171,55 +175,105 @@ public class SlotMachineService {
         return reel;
     }
     
-    private int calculateWinnings(String[] reel1, String[] reel2, String[] reel3) {
+    private int calculateWinnings(String[] reel1, String[] reel2, String[] reel3, String[] reel4, String[] reel5) {
         int winnings = 0;
         
-        // Check for horizontal wins (same symbol across all reels)
+        // Check for horizontal wins (same symbol across all 5 reels)
         for (int row = 0; row < 3; row++) {
-            if (reel1[row].equals(reel2[row]) && reel2[row].equals(reel3[row])) {
+            if (reel1[row].equals(reel2[row]) && reel2[row].equals(reel3[row]) && 
+                reel3[row].equals(reel4[row]) && reel4[row].equals(reel5[row])) {
                 int multiplier = SYMBOL_VALUES.get(reel1[row]);
+                winnings += currentBet * multiplier * 2; // 5-reel win pays double
+            }
+        }
+        
+        // Check for 4-reel matches
+        for (int row = 0; row < 3; row++) {
+            if (reel1[row].equals(reel2[row]) && reel2[row].equals(reel3[row]) && reel3[row].equals(reel4[row])) {
+                int multiplier = SYMBOL_VALUES.get(reel1[row]);
+                winnings += currentBet * multiplier;
+            }
+            if (reel2[row].equals(reel3[row]) && reel3[row].equals(reel4[row]) && reel4[row].equals(reel5[row])) {
+                int multiplier = SYMBOL_VALUES.get(reel2[row]);
                 winnings += currentBet * multiplier;
             }
         }
         
-        // Check for diagonal wins
+        // Check for 3-reel matches
+        for (int row = 0; row < 3; row++) {
+            if (reel1[row].equals(reel2[row]) && reel2[row].equals(reel3[row])) {
+                int multiplier = SYMBOL_VALUES.get(reel1[row]);
+                winnings += currentBet * (multiplier / 2);
+            }
+            if (reel2[row].equals(reel3[row]) && reel3[row].equals(reel4[row])) {
+                int multiplier = SYMBOL_VALUES.get(reel2[row]);
+                winnings += currentBet * (multiplier / 2);
+            }
+            if (reel3[row].equals(reel4[row]) && reel4[row].equals(reel5[row])) {
+                int multiplier = SYMBOL_VALUES.get(reel3[row]);
+                winnings += currentBet * (multiplier / 2);
+            }
+        }
+        
+        // Check for diagonal wins (5-reel diagonals)
         // Top-left to bottom-right
-        if (reel1[0].equals(reel2[1]) && reel2[1].equals(reel3[2])) {
+        if (reel1[0].equals(reel2[1]) && reel2[1].equals(reel3[2]) && 
+            reel3[2].equals(reel4[1]) && reel4[1].equals(reel5[0])) {
             int multiplier = SYMBOL_VALUES.get(reel1[0]);
-            winnings += currentBet * multiplier;
+            winnings += currentBet * multiplier * 2;
         }
         
         // Bottom-left to top-right
-        if (reel1[2].equals(reel2[1]) && reel2[1].equals(reel3[0])) {
+        if (reel1[2].equals(reel2[1]) && reel2[1].equals(reel3[0]) && 
+            reel3[0].equals(reel4[1]) && reel4[1].equals(reel5[2])) {
             int multiplier = SYMBOL_VALUES.get(reel1[2]);
-            winnings += currentBet * multiplier;
-        }
-        
-        // Check for any two matching symbols (smaller payout)
-        for (int row = 0; row < 3; row++) {
-            if (reel1[row].equals(reel2[row]) || reel2[row].equals(reel3[row]) || reel1[row].equals(reel3[row])) {
-                int multiplier = SYMBOL_VALUES.get(reel1[row]);
-                winnings += currentBet * (multiplier / 2); // Half payout for 2 matches
-            }
+            winnings += currentBet * multiplier * 2;
         }
         
         return winnings;
     }
     
-    private String getWinMessage(String[] reel1, String[] reel2, String[] reel3) {
-        // Check for specific win patterns
+    private String getWinMessage(String[] reel1, String[] reel2, String[] reel3, String[] reel4, String[] reel5) {
+        // Check for 5-reel horizontal wins
+        for (int row = 0; row < 3; row++) {
+            if (reel1[row].equals(reel2[row]) && reel2[row].equals(reel3[row]) && 
+                reel3[row].equals(reel4[row]) && reel4[row].equals(reel5[row])) {
+                return "Five " + reel1[row] + " in a row! MEGA WIN!";
+            }
+        }
+        
+        // Check for 4-reel horizontal wins
+        for (int row = 0; row < 3; row++) {
+            if (reel1[row].equals(reel2[row]) && reel2[row].equals(reel3[row]) && reel3[row].equals(reel4[row])) {
+                return "Four " + reel1[row] + " in a row!";
+            }
+            if (reel2[row].equals(reel3[row]) && reel3[row].equals(reel4[row]) && reel4[row].equals(reel5[row])) {
+                return "Four " + reel2[row] + " in a row!";
+            }
+        }
+        
+        // Check for 3-reel horizontal wins
         for (int row = 0; row < 3; row++) {
             if (reel1[row].equals(reel2[row]) && reel2[row].equals(reel3[row])) {
                 return "Three " + reel1[row] + " in a row!";
             }
+            if (reel2[row].equals(reel3[row]) && reel3[row].equals(reel4[row])) {
+                return "Three " + reel2[row] + " in a row!";
+            }
+            if (reel3[row].equals(reel4[row]) && reel4[row].equals(reel5[row])) {
+                return "Three " + reel3[row] + " in a row!";
+            }
         }
         
-        if (reel1[0].equals(reel2[1]) && reel2[1].equals(reel3[2])) {
-            return "Diagonal win!";
+        // Check for diagonal wins
+        if (reel1[0].equals(reel2[1]) && reel2[1].equals(reel3[2]) && 
+            reel3[2].equals(reel4[1]) && reel4[1].equals(reel5[0])) {
+            return "Five-reel diagonal win!";
         }
         
-        if (reel1[2].equals(reel2[1]) && reel2[1].equals(reel3[0])) {
-            return "Diagonal win!";
+        if (reel1[2].equals(reel2[1]) && reel2[1].equals(reel3[0]) && 
+            reel3[0].equals(reel4[1]) && reel4[1].equals(reel5[2])) {
+            return "Five-reel diagonal win!";
         }
         
         return "Partial match!";

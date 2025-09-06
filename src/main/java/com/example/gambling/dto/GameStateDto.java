@@ -23,6 +23,8 @@ public class GameStateDto {
     private String[] reel1;
     private String[] reel2;
     private String[] reel3;
+    private String[] reel4;
+    private String[] reel5;
     private String message;
 
     public GameStateDto() {}
@@ -85,6 +87,12 @@ public class GameStateDto {
 
     public String[] getReel3() { return reel3; }
     public void setReel3(String[] reel3) { this.reel3 = reel3; }
+
+    public String[] getReel4() { return reel4; }
+    public void setReel4(String[] reel4) { this.reel4 = reel4; }
+
+    public String[] getReel5() { return reel5; }
+    public void setReel5(String[] reel5) { this.reel5 = reel5; }
 
     public String getMessage() { return message; }
     public void setMessage(String message) { this.message = message; }
