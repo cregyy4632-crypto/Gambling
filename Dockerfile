@@ -27,4 +27,4 @@ EXPOSE 8080
 ENV PORT=8080
 
 # Run the application
-CMD ["sh", "-c", "java -jar target/*.jar --server.port=$PORT"]
+CMD ["java", "-jar", "target/gambling-0.0.1-SNAPSHOT.jar", "--server.port=8080"]
