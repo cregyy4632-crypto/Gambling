@@ -567,7 +567,6 @@
                     <button class="btn btn-bet" onclick="clearBet()">Clear Bet</button>
                     <button class="btn btn-spin" id="spin-btn" onclick="spin()" disabled>🎣 SPIN</button>
                     <button class="btn btn-auto" id="auto-spin-btn" onclick="toggleAutoSpin()" disabled>🔄 AUTO SPIN</button>
-                    <button class="btn btn-test" onclick="testSpinning()" style="background: #ff6b6b;">TEST SPIN ANIMATION</button>
                 </div>
             </div>
 
@@ -684,12 +683,16 @@
         function updateGameDisplay() {
             if (!gameState) return;
 
-            // Update balance
-            playerBalance = gameState.playerBalance;
-            currentBet = gameState.currentBet;
+            // Update balance from backend
+            if (gameState.playerBalance !== undefined) {
+                playerBalance = gameState.playerBalance;
+                updateBalanceDisplay();
+            }
             
-            document.getElementById('balance').textContent = playerBalance;
-            document.getElementById('bet-amount').textContent = currentBet;
+            if (gameState.currentBet !== undefined) {
+                currentBet = gameState.currentBet;
+                updateBetDisplay();
+            }
 
             // Update free spins display
             const freeSpinsDisplay = document.getElementById('free-spins-display');
@@ -932,6 +935,10 @@
             document.getElementById('bet-amount').textContent = currentBet;
         }
 
+        function updateBalanceDisplay() {
+            document.getElementById('balance-amount').textContent = playerBalance;
+        }
+
         function clearBet() {
             currentBet = 0;
             updateBetDisplay();
@@ -948,6 +955,11 @@
             }
             
             console.log('Proceeding with spin...');
+            
+            // Deduct bet from balance immediately
+            playerBalance -= currentBet;
+            updateBalanceDisplay();
+            console.log('Bet deducted, new balance:', playerBalance);
             
             // Disable buttons during spin
             disableSpinButton();
@@ -975,6 +987,9 @@
                 console.error('Spin error:', error);
                 clearInterval(spinInterval);
                 showError('Spin failed!');
+                // Refund the bet if spin failed
+                playerBalance += currentBet;
+                updateBalanceDisplay();
             }
         }
 
@@ -992,6 +1007,11 @@
                 return;
             }
             
+            if (playerBalance < currentBet) {
+                showError('Insufficient balance for auto-spin!');
+                return;
+            }
+            
             autoSpinActive = true;
             const autoBtn = document.getElementById('auto-spin-btn');
             autoBtn.textContent = '⏹️ STOP AUTO';
@@ -999,8 +1019,37 @@
             
             // Auto spin every 2 seconds
             autoSpinInterval = setInterval(async () => {
-                if (autoSpinActive && currentBet > 0) {
-                    await makeApiCall('/spin', 'POST');
+                if (autoSpinActive && currentBet > 0 && playerBalance >= currentBet) {
+                    // Deduct bet from balance
+                    playerBalance -= currentBet;
+                    updateBalanceDisplay();
+                    
+                    // Show spinning animation
+                    showSpinningAnimation();
+                    
+                    // Change symbols continuously during spin
+                    const spinInterval = setInterval(() => {
+                        for (let i = 1; i <= 5; i++) {
+                            const reel = document.getElementById(`reel${i}`);
+                            if (reel && reel.classList.contains('spinning')) {
+                                const symbols = reel.querySelectorAll('.reel-symbol');
+                                symbols.forEach(symbol => {
+                                    symbol.textContent = getRandomSymbol();
+                                });
+                            }
+                        }
+                    }, 100);
+                    
+                    try {
+                        await makeApiCall('/spin', 'POST');
+                        clearInterval(spinInterval);
+                    } catch (error) {
+                        console.error('Auto spin error:', error);
+                        clearInterval(spinInterval);
+                        // Refund the bet if spin failed
+                        playerBalance += currentBet;
+                        updateBalanceDisplay();
+                    }
                 } else {
                     stopAutoSpin();
                 }
@@ -1088,30 +1137,6 @@
         }
 
 
-        function testSpinning() {
-            console.log('Testing spinning animation...');
-            showSpinningAnimation();
-            
-            // Change symbols continuously during spin
-            const spinInterval = setInterval(() => {
-                for (let i = 1; i <= 5; i++) {
-                    const reel = document.getElementById(`reel${i}`);
-                    if (reel && reel.classList.contains('spinning')) {
-                        const symbols = reel.querySelectorAll('.reel-symbol');
-                        symbols.forEach(symbol => {
-                            symbol.textContent = getRandomSymbol();
-                        });
-                    }
-                }
-            }, 100);
-            
-            // Stop spinning after 3 seconds
-            setTimeout(() => {
-                clearInterval(spinInterval);
-                hideSpinningAnimation();
-                console.log('Test spinning completed');
-            }, 3000);
-        }
 
         // Load initial game state
         window.onload = function() {
