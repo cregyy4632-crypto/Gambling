@@ -638,34 +638,7 @@
             }
 
             // Update button states
-            const dealBtn = document.getElementById('deal-btn');
-            const hitBtn = document.getElementById('hit-btn');
-            const standBtn = document.getElementById('stand-btn');
-            const doubleBtn = document.getElementById('double-btn');
-            const newGameBtn = document.getElementById('new-game-btn');
-
-            if (state.gameStarted && !state.roundOver) {
-                // Game in progress
-                dealBtn.disabled = true;
-                hitBtn.disabled = false;
-                standBtn.disabled = false;
-                doubleBtn.disabled = false;
-                newGameBtn.disabled = true;
-            } else if (state.gameStarted && state.roundOver) {
-                // Round over
-                dealBtn.disabled = true;
-                hitBtn.disabled = true;
-                standBtn.disabled = true;
-                doubleBtn.disabled = true;
-                newGameBtn.disabled = false;
-            } else {
-                // No game started
-                dealBtn.disabled = currentBet === 0;
-                hitBtn.disabled = true;
-                standBtn.disabled = true;
-                doubleBtn.disabled = true;
-                newGameBtn.disabled = false;
-            }
+            updateButtonStates();
         }
 
         async function makeApiCall(endpoint, method = 'GET') {
@@ -698,9 +671,12 @@
         }
 
         function addBet(amount) {
+            console.log('Adding bet:', amount, 'Current bet:', currentBet, 'Balance:', playerBalance);
             if (currentBet + amount <= playerBalance) {
                 currentBet += amount;
                 updateBetDisplay();
+                updateButtonStates(); // Update button states when bet is placed
+                console.log('Bet added, new currentBet:', currentBet);
             } else {
                 showError('Insufficient balance!');
             }
@@ -714,12 +690,45 @@
             document.getElementById('balance').textContent = playerBalance;
         }
 
+        function updateButtonStates() {
+            const dealBtn = document.getElementById('deal-btn');
+            const hitBtn = document.getElementById('hit-btn');
+            const standBtn = document.getElementById('stand-btn');
+            const doubleBtn = document.getElementById('double-btn');
+            const newGameBtn = document.getElementById('new-game-btn');
+
+            if (gameState && gameState.gameStarted && !gameState.roundOver) {
+                // Game in progress
+                dealBtn.disabled = true;
+                hitBtn.disabled = false;
+                standBtn.disabled = false;
+                doubleBtn.disabled = false;
+                newGameBtn.disabled = true;
+            } else if (gameState && gameState.gameStarted && gameState.roundOver) {
+                // Round over
+                dealBtn.disabled = true;
+                hitBtn.disabled = true;
+                standBtn.disabled = true;
+                doubleBtn.disabled = true;
+                newGameBtn.disabled = false;
+            } else {
+                // No game started - enable deal if bet is placed
+                dealBtn.disabled = currentBet === 0;
+                hitBtn.disabled = true;
+                standBtn.disabled = true;
+                doubleBtn.disabled = true;
+                newGameBtn.disabled = false;
+            }
+        }
+
         function clearBet() {
             currentBet = 0;
             updateBetDisplay();
+            updateButtonStates();
         }
 
         async function dealCards() {
+            console.log('Deal button clicked, currentBet:', currentBet);
             if (currentBet === 0) {
                 showError('Please place a bet first!');
                 return;
@@ -803,6 +812,7 @@
         // Load initial game state
         window.onload = function() {
             updateBalance();
+            updateButtonStates();
             makeApiCall('/state');
         };
     </script>
