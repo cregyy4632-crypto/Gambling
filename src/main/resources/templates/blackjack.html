@@ -480,23 +480,6 @@
             <div id="error-message" class="error" style="display: none;"></div>
             <div id="success-message" class="success" style="display: none;"></div>
 
-            <!-- Betting Area -->
-            <div class="betting-area">
-                <div class="betting-circle">
-                    <div class="bet-amount" id="bet-amount">$0</div>
-                </div>
-            </div>
-
-            <!-- Chips -->
-            <div class="chips-container">
-                <div class="chip chip-1" onclick="addBet(1)">$1</div>
-                <div class="chip chip-5" onclick="addBet(5)">$5</div>
-                <div class="chip chip-10" onclick="addBet(10)">$10</div>
-                <div class="chip chip-25" onclick="addBet(25)">$25</div>
-                <div class="chip chip-50" onclick="addBet(50)">$50</div>
-                <div class="chip chip-100" onclick="addBet(100)">$100</div>
-            </div>
-
             <!-- Game Status -->
             <div class="game-status" id="game-status">Place your bet and click Deal!</div>
 
@@ -525,6 +508,23 @@
                 <button id="double-btn" class="btn-primary" onclick="doubleDown()" disabled>Double</button>
                 <button id="new-game-btn" class="btn-primary" onclick="startNewGame()">New Game</button>
             </div>
+
+            <!-- Betting Area (Moved to Bottom) -->
+            <div class="betting-area">
+                <div class="betting-circle">
+                    <div class="bet-amount" id="bet-amount">$0</div>
+                </div>
+            </div>
+
+            <!-- Chips -->
+            <div class="chips-container">
+                <div class="chip chip-1" onclick="addBet(1)">$1</div>
+                <div class="chip chip-5" onclick="addBet(5)">$5</div>
+                <div class="chip chip-10" onclick="addBet(10)">$10</div>
+                <div class="chip chip-25" onclick="addBet(25)">$25</div>
+                <div class="chip chip-50" onclick="addBet(50)">$50</div>
+                <div class="chip chip-100" onclick="addBet(100)">$100</div>
+            </div>
         </div>
     </main>
 
@@ -532,7 +532,17 @@
         const API_BASE = '/api/blackjack';
         let gameState = null;
         let currentBet = 0;
-        let playerBalance = 1000; // Starting balance
+        let playerBalance = 1000; // Default balance
+
+        // Get balance from URL parameter
+        function getBalanceFromURL() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const balance = urlParams.get('balance');
+            return balance ? parseInt(balance) : 1000;
+        }
+
+        // Initialize balance
+        playerBalance = getBalanceFromURL();
 
         function showLoading() {
             document.getElementById('loading').style.display = 'block';
@@ -604,14 +614,13 @@
                 if (state.gameResult.includes('win')) {
                     playerBalance += currentBet * 2; // Win pays 1:1
                 } else if (state.gameResult.includes('lose')) {
-                    playerBalance -= currentBet; // Lose the bet
+                    // Balance already deducted when bet was placed
                 }
                 updateBalance();
             } else if (state.playerBust) {
                 statusDiv.textContent = '💥 You busted! Dealer wins.';
                 statusDiv.className = 'game-status lose';
-                playerBalance -= currentBet;
-                updateBalance();
+                // Balance already deducted when bet was placed
             } else if (state.dealerBust) {
                 statusDiv.textContent = '🎉 Dealer busted! You win!';
                 statusDiv.className = 'game-status win';
@@ -715,6 +724,9 @@
                 showError('Please place a bet first!');
                 return;
             }
+            // Deduct bet from balance
+            playerBalance -= currentBet;
+            updateBalance();
             await makeApiCall('/start', 'POST');
         }
 
@@ -790,6 +802,7 @@
 
         // Load initial game state
         window.onload = function() {
+            updateBalance();
             makeApiCall('/state');
         };
     </script>

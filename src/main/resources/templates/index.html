@@ -170,6 +170,91 @@
             color: #e0e0e0;
         }
 
+        .login-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 60vh;
+            width: 100%;
+        }
+
+        .login-form {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            backdrop-filter: blur(10px);
+            border: 2px solid #ffd700;
+            max-width: 400px;
+            width: 100%;
+        }
+
+        .login-title {
+            font-size: 2rem;
+            color: #ffd700;
+            text-align: center;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .login-subtitle {
+            font-size: 1.1rem;
+            color: #e0e0e0;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            color: #ffd700;
+            font-weight: bold;
+            margin-bottom: 8px;
+            font-size: 1.1rem;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #ffd700;
+            border-radius: 8px;
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: #ffed4e;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 15px;
+            background: linear-gradient(45deg, #ffd700, #ffed4e);
+            color: #333;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .login-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(255, 215, 0, 0.4);
+        }
+
         @media (max-width: 768px) {
             .nav-container {
                 flex-direction: column;
@@ -206,9 +291,35 @@
     </nav>
 
     <main class="main-content">
-        <div class="hero-section">
+        <div class="login-container" id="login-container">
+            <div class="login-form">
+                <h2 class="login-title">Welcome to Epic Gambling By IC</h2>
+                <p class="login-subtitle">Enter your details to start playing</p>
+                
+                <form id="login-form">
+                    <div class="form-group">
+                        <label for="username">Username:</label>
+                        <input type="text" id="username" name="username" required placeholder="Enter your username">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="balance">Starting Balance:</label>
+                        <select id="balance" name="balance" required>
+                            <option value="100">$100 - Beginner</option>
+                            <option value="500" selected>$500 - Standard</option>
+                            <option value="1000">$1000 - High Roller</option>
+                            <option value="5000">$5000 - VIP</option>
+                        </select>
+                    </div>
+                    
+                    <button type="submit" class="login-btn">Start Playing</button>
+                </form>
+            </div>
+        </div>
+
+        <div class="hero-section" id="hero-section" style="display: none;">
             <h1 class="hero-title">Epic Gambling By IC</h1>
-            <p class="hero-subtitle">Experience the thrill of classic casino games with modern gameplay</p>
+            <p class="hero-subtitle">Welcome back, <span id="welcome-user"></span>! Balance: $<span id="user-balance"></span></p>
         </div>
 
         <div class="games-section">
@@ -247,5 +358,62 @@
     <footer class="footer">
         <p>&copy; 2024 Epic Gambling By IC. All rights reserved.</p>
     </footer>
+
+    <script>
+        // Check if user is already logged in
+        window.onload = function() {
+            const savedUser = localStorage.getItem('gamblingUser');
+            const savedBalance = localStorage.getItem('gamblingBalance');
+            
+            if (savedUser && savedBalance) {
+                showMainContent(savedUser, savedBalance);
+            }
+        };
+
+        // Handle login form submission
+        document.getElementById('login-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const username = document.getElementById('username').value;
+            const balance = document.getElementById('balance').value;
+            
+            if (username.trim() === '') {
+                alert('Please enter a username!');
+                return;
+            }
+            
+            // Save user data to localStorage
+            localStorage.setItem('gamblingUser', username);
+            localStorage.setItem('gamblingBalance', balance);
+            
+            // Show main content
+            showMainContent(username, balance);
+        });
+
+        function showMainContent(username, balance) {
+            // Hide login form
+            document.getElementById('login-container').style.display = 'none';
+            
+            // Show main content
+            document.getElementById('hero-section').style.display = 'block';
+            document.getElementById('welcome-user').textContent = username;
+            document.getElementById('user-balance').textContent = balance;
+            
+            // Update game cards to pass balance
+            const gameCards = document.querySelectorAll('.play-button');
+            gameCards.forEach(card => {
+                if (card.href && card.href.includes('/blackjack')) {
+                    card.href = `/blackjack?balance=${balance}`;
+                }
+            });
+        }
+
+        // Logout function (can be called from anywhere)
+        function logout() {
+            localStorage.removeItem('gamblingUser');
+            localStorage.removeItem('gamblingBalance');
+            location.reload();
+        }
+    </script>
 </body>
 </html>
