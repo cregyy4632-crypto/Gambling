@@ -620,16 +620,21 @@
             const statusDiv = document.getElementById('game-status');
             if (state.gameResult) {
                 statusDiv.textContent = state.gameResult;
-                statusDiv.className = 'game-status ' + (state.gameResult.includes('win') ? 'win' : 
-                    state.gameResult.includes('lose') ? 'lose' : 'tie');
+                statusDiv.className = 'game-status ' + (state.gameResult.includes('Player wins') || state.gameResult.includes('Dealer busts') ? 'win' : 
+                    state.gameResult.includes('Dealer wins') || state.gameResult.includes('Player busts') ? 'lose' : 'tie');
                 
                 // Update balance based on result
-                if (state.gameResult.includes('win') || state.gameResult.includes('Player wins')) {
+                console.log('Game result:', state.gameResult, 'Current bet:', currentBet, 'Current balance:', playerBalance);
+                
+                if (state.gameResult.includes('Player wins') || state.gameResult.includes('Dealer busts')) {
                     playerBalance += currentBet * 2; // Win pays 1:1
-                } else if (state.gameResult.includes('lose') || state.gameResult.includes('Dealer wins')) {
-                    // Balance already deducted when bet was placed
-                } else if (state.gameResult.includes('Push') || state.gameResult.includes('tie')) {
+                    console.log('Player wins - adding', currentBet * 2, 'New balance:', playerBalance);
+                } else if (state.gameResult.includes('Dealer wins') || state.gameResult.includes('Player busts')) {
+                    // Balance already deducted when bet was placed - no additional payout
+                    console.log('Dealer wins - no payout, balance stays:', playerBalance);
+                } else if (state.gameResult.includes('Push')) {
                     playerBalance += currentBet; // Return bet for tie
+                    console.log('Push - returning bet', currentBet, 'New balance:', playerBalance);
                 }
                 updateBalance();
                 
@@ -766,11 +771,13 @@
         }
 
 
-        function doubleDown() {
+        async function doubleDown() {
             if (currentBet * 2 <= playerBalance) {
                 currentBet *= 2;
                 updateBetDisplay();
-                hit();
+                await hit();
+                // After doubling down, automatically stand
+                await stand();
             } else {
                 showError('Insufficient balance to double down!');
             }
