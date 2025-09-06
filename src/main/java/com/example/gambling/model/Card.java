@@ -36,6 +36,43 @@ public class Card {
         }
         return r + s;
     }
+    
+    public String getDisplayName() {
+        return rank.name().toLowerCase() + "_of_" + suit.name().toLowerCase();
+    }
+    
+    public String getSuitSymbol() {
+        switch (suit) {
+            case CLUBS: return "\u2663";
+            case DIAMONDS: return "\u2666";
+            case HEARTS: return "\u2665";
+            case SPADES: return "\u2660";
+            default: return "?";
+        }
+    }
+    
+    public String getRankSymbol() {
+        switch (rank) {
+            case TWO: return "2";
+            case THREE: return "3";
+            case FOUR: return "4";
+            case FIVE: return "5";
+            case SIX: return "6";
+            case SEVEN: return "7";
+            case EIGHT: return "8";
+            case NINE: return "9";
+            case TEN: return "10";
+            case JACK: return "J";
+            case QUEEN: return "Q";
+            case KING: return "K";
+            case ACE: return "A";
+            default: return "?";
+        }
+    }
+    
+    public boolean isRed() {
+        return suit == Suit.HEARTS || suit == Suit.DIAMONDS;
+    }
 }
 
 

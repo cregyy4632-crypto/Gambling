@@ -18,12 +18,12 @@ public class GameStateDto {
     public GameStateDto() {}
 
     public GameStateDto(Hand player, Hand dealer, boolean roundOver, String gameResult, boolean gameStarted) {
-        this.playerCards = player.getCards();
-        this.dealerCards = dealer.getCards();
-        this.playerValue = player.getValue();
-        this.dealerValue = dealer.getValue();
-        this.playerBust = player.isBust();
-        this.dealerBust = dealer.isBust();
+        this.playerCards = (player != null) ? player.getCards() : null;
+        this.dealerCards = (dealer != null) ? dealer.getCards() : null;
+        this.playerValue = (player != null) ? player.getValue() : 0;
+        this.dealerValue = (dealer != null) ? dealer.getValue() : 0;
+        this.playerBust = (player != null) ? player.isBust() : false;
+        this.dealerBust = (dealer != null) ? dealer.isBust() : false;
         this.roundOver = roundOver;
         this.gameResult = gameResult;
         this.gameStarted = gameStarted;
