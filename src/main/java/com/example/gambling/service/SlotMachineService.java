@@ -41,6 +41,7 @@ public class SlotMachineService {
     }
     
     public ApiResponse<GameStateDto> getState() {
+        System.out.println("Getting state - playerBalance: " + playerBalance + ", currentBet: " + currentBet);
         GameStateDto state = new GameStateDto();
         state.setPlayerBalance(playerBalance);
         state.setCurrentBet(currentBet);
@@ -55,6 +56,7 @@ public class SlotMachineService {
     }
     
     public ApiResponse<GameStateDto> setBet(int betAmount) {
+        System.out.println("Setting bet - amount: " + betAmount + ", playerBalance: " + playerBalance);
         if (betAmount <= 0) {
             return new ApiResponse<>(false, "Bet amount must be positive", null);
         }
@@ -66,6 +68,7 @@ public class SlotMachineService {
         currentBet = betAmount;
         gameStarted = false;
         roundOver = false;
+        System.out.println("Bet set successfully - currentBet: " + currentBet);
         
         GameStateDto state = new GameStateDto();
         state.setPlayerBalance(playerBalance);
