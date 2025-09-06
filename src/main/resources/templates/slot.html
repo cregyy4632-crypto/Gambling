@@ -167,12 +167,21 @@
         }
 
         .spinning .reel-symbol {
-            animation: spin 0.5s linear infinite;
+            animation: spin 0.3s linear infinite;
+            transform-style: preserve-3d;
         }
 
         @keyframes spin {
-            from { transform: rotateY(0deg); }
-            to { transform: rotateY(360deg); }
+            0% { transform: rotateY(0deg) scale(1); }
+            25% { transform: rotateY(90deg) scale(1.1); }
+            50% { transform: rotateY(180deg) scale(1); }
+            75% { transform: rotateY(270deg) scale(1.1); }
+            100% { transform: rotateY(360deg) scale(1); }
+        }
+
+        .reel {
+            transform-style: preserve-3d;
+            perspective: 1000px;
         }
 
         .reel-symbol.winning {
@@ -512,6 +521,7 @@
                     <button class="btn btn-bet" onclick="clearBet()">Clear Bet</button>
                     <button class="btn btn-spin" id="spin-btn" onclick="spin()" disabled>🎣 SPIN</button>
                     <button class="btn btn-auto" id="auto-spin-btn" onclick="toggleAutoSpin()" disabled>🔄 AUTO SPIN</button>
+                    <button class="btn btn-test" onclick="testSpinning()" style="background: #ff6b6b;">TEST SPIN ANIMATION</button>
                 </div>
             </div>
 
@@ -954,23 +964,39 @@
 
 
         function showSpinningAnimation() {
+            console.log('Starting spinning animation...');
+            
             // Add spinning class to reels
             for (let i = 1; i <= 5; i++) {
                 const reel = document.getElementById(`reel${i}`);
-                reel.classList.add('spinning');
+                console.log(`Adding spinning class to reel${i}:`, reel);
+                if (reel) {
+                    reel.classList.add('spinning');
+                    console.log(`Reel${i} classes:`, reel.className);
+                }
             }
             
             // Update status
             document.getElementById('game-status').textContent = '🎰 Spinning...';
             document.getElementById('game-status').className = 'game-status';
+            
+            console.log('Spinning animation started');
         }
 
         function hideSpinningAnimation() {
+            console.log('Stopping spinning animation...');
+            
             // Remove spinning class from reels
             for (let i = 1; i <= 5; i++) {
                 const reel = document.getElementById(`reel${i}`);
-                reel.classList.remove('spinning');
+                console.log(`Removing spinning class from reel${i}:`, reel);
+                if (reel) {
+                    reel.classList.remove('spinning');
+                    console.log(`Reel${i} classes after removal:`, reel.className);
+                }
             }
+            
+            console.log('Spinning animation stopped');
         }
 
         function showError(message) {
@@ -989,6 +1015,17 @@
             }, 2000);
         }
 
+
+        function testSpinning() {
+            console.log('Testing spinning animation...');
+            showSpinningAnimation();
+            
+            // Stop spinning after 3 seconds
+            setTimeout(() => {
+                hideSpinningAnimation();
+                console.log('Test spinning completed');
+            }, 3000);
+        }
 
         // Load initial game state
         window.onload = function() {
