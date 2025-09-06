@@ -565,6 +565,7 @@
 
         async function makeApiCall(endpoint, method = 'GET', data = null) {
             try {
+                console.log('Making API call to:', `/slot${endpoint}`, 'Method:', method);
                 showLoading();
                 
                 const options = {
@@ -579,7 +580,9 @@
                 }
                 
                 const response = await fetch(`/slot${endpoint}`, options);
+                console.log('Response status:', response.status);
                 const result = await response.json();
+                console.log('API Response:', result);
                 
                 hideLoading();
                 
@@ -590,6 +593,7 @@
                     showError(result.message);
                 }
             } catch (error) {
+                console.error('API Error:', error);
                 hideLoading();
                 showError('Network error: ' + error.message);
             }
@@ -745,11 +749,14 @@
 
         function updateButtonStates() {
             const spinBtn = document.getElementById('spin-btn');
+            console.log('Updating button states - currentBet:', currentBet, 'gameState:', gameState);
             
             if (currentBet > 0 && (!gameState || !gameState.gameStarted || gameState.roundOver)) {
                 spinBtn.disabled = false;
+                console.log('Spin button enabled');
             } else {
                 spinBtn.disabled = true;
+                console.log('Spin button disabled');
             }
         }
 
@@ -799,6 +806,7 @@
         }
 
         async function spin() {
+            console.log('Spin button clicked - currentBet:', currentBet, 'playerBalance:', playerBalance);
             if (currentBet === 0) {
                 showError('Please place a bet first!');
                 return;
@@ -824,6 +832,7 @@
 
         // Load initial game state
         window.onload = function() {
+            console.log('Page loaded, initializing slot machine');
             updateBetDisplay();
             updateButtonStates();
             makeApiCall('/state');

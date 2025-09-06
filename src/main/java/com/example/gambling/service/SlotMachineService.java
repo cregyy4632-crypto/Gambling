@@ -79,11 +79,15 @@ public class SlotMachineService {
     }
     
     public ApiResponse<GameStateDto> spin() {
+        System.out.println("Spin called - currentBet: " + currentBet + ", playerBalance: " + playerBalance + ", inFreeSpinsMode: " + inFreeSpinsMode);
+        
         if (currentBet <= 0) {
+            System.out.println("No bet placed");
             return new ApiResponse<>(false, "Please set a bet first", null);
         }
         
         if (currentBet > playerBalance && !inFreeSpinsMode) {
+            System.out.println("Insufficient balance");
             return new ApiResponse<>(false, "Insufficient balance", null);
         }
         
