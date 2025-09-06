@@ -611,24 +611,41 @@
                     state.gameResult.includes('lose') ? 'lose' : 'tie');
                 
                 // Update balance based on result
-                if (state.gameResult.includes('win')) {
+                if (state.gameResult.includes('win') || state.gameResult.includes('Player wins')) {
                     playerBalance += currentBet * 2; // Win pays 1:1
-                } else if (state.gameResult.includes('lose')) {
+                } else if (state.gameResult.includes('lose') || state.gameResult.includes('Dealer wins')) {
                     // Balance already deducted when bet was placed
+                } else if (state.gameResult.includes('Push') || state.gameResult.includes('tie')) {
+                    playerBalance += currentBet; // Return bet for tie
                 }
                 updateBalance();
+                
+                // Auto-reset after showing result
+                setTimeout(() => {
+                    resetGameState();
+                }, 3000);
             } else if (state.playerBust) {
                 statusDiv.textContent = '💥 You busted! Dealer wins.';
                 statusDiv.className = 'game-status lose';
                 // Balance already deducted when bet was placed
+                setTimeout(() => {
+                    resetGameState();
+                }, 3000);
             } else if (state.dealerBust) {
                 statusDiv.textContent = '🎉 Dealer busted! You win!';
                 statusDiv.className = 'game-status win';
-                playerBalance += currentBet * 2;
+                playerBalance += currentBet * 2; // Win pays 1:1
                 updateBalance();
+                setTimeout(() => {
+                    resetGameState();
+                }, 3000);
             } else if (state.roundOver) {
-                statusDiv.textContent = 'Round over.';
+                statusDiv.textContent = 'Round over. Place a new bet and click Deal to play again!';
                 statusDiv.className = 'game-status';
+                // Auto-reset the game state for next round
+                setTimeout(() => {
+                    resetGameState();
+                }, 2000);
             } else if (state.gameStarted) {
                 statusDiv.textContent = '🎯 Game in progress. Make your move!';
                 statusDiv.className = 'game-status';
@@ -705,12 +722,12 @@
                 doubleBtn.disabled = false;
                 newGameBtn.disabled = true;
             } else if (gameState && gameState.gameStarted && gameState.roundOver) {
-                // Round over
+                // Round over - disable all buttons, will auto-reset
                 dealBtn.disabled = true;
                 hitBtn.disabled = true;
                 standBtn.disabled = true;
                 doubleBtn.disabled = true;
-                newGameBtn.disabled = false;
+                newGameBtn.disabled = true;
             } else {
                 // No game started - enable deal if bet is placed
                 dealBtn.disabled = currentBet === 0;
@@ -766,10 +783,38 @@
             await makeApiCall('/reset', 'POST');
         }
 
+        function resetGameState() {
+            // Reset the frontend game state without API call
+            gameState = null;
+            currentBet = 0;
+            updateBetDisplay();
+            updateButtonStates();
+            
+            // Clear the card displays
+            document.getElementById('player-cards').innerHTML = '';
+            document.getElementById('dealer-cards').innerHTML = '';
+            document.getElementById('player-value').textContent = 'Value: 0';
+            document.getElementById('dealer-value').textContent = 'Value: 0';
+            
+            // Update status
+            document.getElementById('game-status').textContent = '🎰 Place your bet and click Deal!';
+            document.getElementById('game-status').className = 'game-status';
+        }
+
         function createCardElement(card) {
+            // Ensure we have the card data
+            if (!card) {
+                console.log('No card data provided');
+                return `<div class="card">?</div>`;
+            }
+            
+            console.log('Creating card element:', card);
+            
             const isRed = card.isRed || (card.suit === 'HEARTS' || card.suit === 'DIAMONDS');
             const suitSymbol = card.suitSymbol || getSuitSymbol(card.suit);
             const rankSymbol = card.rankSymbol || getRankSymbol(card.rank);
+            
+            console.log('Card symbols - Suit:', suitSymbol, 'Rank:', rankSymbol, 'isRed:', isRed);
             
             return `
                 <div class="card ${isRed ? 'red' : 'black'}">
