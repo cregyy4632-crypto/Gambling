@@ -249,7 +249,7 @@
         .card {
             background: white;
             color: #333;
-            padding: 12px 8px;
+            padding: 8px 6px;
             border-radius: 8px;
             font-weight: bold;
             box-shadow: 
@@ -281,21 +281,29 @@
         }
         
         .card-top {
-            font-size: 1.2rem;
+            font-size: 1rem;
             font-weight: bold;
             text-align: left;
+            line-height: 1;
+            margin: 0;
         }
         
         .card-center {
-            font-size: 2rem;
-            margin: 10px 0;
+            font-size: 1.8rem;
+            margin: 5px 0;
+            line-height: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         
         .card-bottom {
-            font-size: 1.2rem;
+            font-size: 1rem;
             font-weight: bold;
             text-align: right;
             transform: rotate(180deg);
+            line-height: 1;
+            margin: 0;
         }
         
         .card-back {
@@ -506,7 +514,6 @@
                 <button id="hit-btn" class="btn-secondary" onclick="hit()" disabled>Hit</button>
                 <button id="stand-btn" class="btn-warning" onclick="stand()" disabled>Stand</button>
                 <button id="double-btn" class="btn-primary" onclick="doubleDown()" disabled>Double</button>
-                <button id="new-game-btn" class="btn-primary" onclick="startNewGame()">New Game</button>
             </div>
 
             <!-- Betting Area (Moved to Bottom) -->
@@ -585,7 +592,13 @@
                     }
                     return createCardElement(card);
                 }).join('');
-                dealerValue.textContent = `Value: ${state.dealerValue}`;
+                
+                // Hide dealer value until round is over
+                if (state.roundOver || !state.gameStarted) {
+                    dealerValue.textContent = `Value: ${state.dealerValue}`;
+                } else {
+                    dealerValue.textContent = 'Value: ?';
+                }
             } else {
                 dealerCards.textContent = 'No cards';
                 dealerValue.textContent = 'Value: 0';
@@ -712,7 +725,6 @@
             const hitBtn = document.getElementById('hit-btn');
             const standBtn = document.getElementById('stand-btn');
             const doubleBtn = document.getElementById('double-btn');
-            const newGameBtn = document.getElementById('new-game-btn');
 
             if (gameState && gameState.gameStarted && !gameState.roundOver) {
                 // Game in progress
@@ -720,21 +732,18 @@
                 hitBtn.disabled = false;
                 standBtn.disabled = false;
                 doubleBtn.disabled = false;
-                newGameBtn.disabled = true;
             } else if (gameState && gameState.gameStarted && gameState.roundOver) {
                 // Round over - disable all buttons, will auto-reset
                 dealBtn.disabled = true;
                 hitBtn.disabled = true;
                 standBtn.disabled = true;
                 doubleBtn.disabled = true;
-                newGameBtn.disabled = true;
             } else {
                 // No game started - enable deal if bet is placed
                 dealBtn.disabled = currentBet === 0;
                 hitBtn.disabled = true;
                 standBtn.disabled = true;
                 doubleBtn.disabled = true;
-                newGameBtn.disabled = false;
             }
         }
 
@@ -756,10 +765,6 @@
             await makeApiCall('/start', 'POST');
         }
 
-        async function startNewGame() {
-            clearBet();
-            await makeApiCall('/reset', 'POST');
-        }
 
         function doubleDown() {
             if (currentBet * 2 <= playerBalance) {
