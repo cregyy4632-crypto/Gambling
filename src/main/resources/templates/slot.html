@@ -166,6 +166,15 @@
             transition: all 0.3s ease;
         }
 
+        .spinning .reel-symbol {
+            animation: spin 0.5s linear infinite;
+        }
+
+        @keyframes spin {
+            from { transform: rotateY(0deg); }
+            to { transform: rotateY(360deg); }
+        }
+
         .reel-symbol.winning {
             background: linear-gradient(45deg, #ffd700, #ffed4e);
             color: #000;
@@ -325,13 +334,6 @@
             border: 2px solid rgba(255, 215, 0, 0.3);
         }
 
-        .loading {
-            display: none;
-            text-align: center;
-            font-size: 1.2rem;
-            color: #ffd700;
-            margin: 1rem 0;
-        }
 
         .error {
             background: linear-gradient(45deg, #ff6b6b, #ee5a52);
@@ -517,9 +519,6 @@
                 🎰 Place your bet and click SPIN to start fishing!
             </div>
 
-            <div class="loading" id="loading">
-                🎣 Reeling in your catch...
-            </div>
 
             <div class="paytable">
                 <h3>🎣 Paytable - Fishing Frenzy (5 Reels)</h3>
@@ -594,7 +593,6 @@
         async function makeApiCall(endpoint, method = 'GET', data = null) {
             try {
                 console.log('Making API call to:', `/slot${endpoint}`, 'Method:', method);
-                showLoading();
                 
                 const options = {
                     method: method,
@@ -612,8 +610,6 @@
                 const result = await response.json();
                 console.log('API Response:', result);
                 
-                hideLoading();
-                
                 if (result.success) {
                     gameState = result.data;
                     updateGameDisplay();
@@ -622,8 +618,10 @@
                 }
             } catch (error) {
                 console.error('API Error:', error);
-                hideLoading();
                 showError('Network error: ' + error.message);
+            } finally {
+                hideSpinningAnimation();
+                updateButtonStates();
             }
         }
 
@@ -778,22 +776,13 @@
         function enableSpinButton() {
             const spinBtn = document.getElementById('spin-btn');
             const autoBtn = document.getElementById('auto-spin-btn');
-            console.log('=== ENABLING SPIN BUTTON ===');
-            console.log('currentBet:', currentBet);
-            console.log('currentBet > 0:', currentBet > 0);
-            console.log('spinBtn found:', !!spinBtn);
-            console.log('autoBtn found:', !!autoBtn);
+            console.log('Enabling spin button - currentBet:', currentBet);
             
             if (currentBet > 0) {
                 spinBtn.disabled = false;
                 autoBtn.disabled = false;
-                console.log('Spin button enabled successfully');
-                alert('Spin button enabled!');
-            } else {
-                console.log('Cannot enable spin button - no bet');
-                alert('Cannot enable spin button - no bet');
+                console.log('Spin button enabled');
             }
-            console.log('=== END ENABLE SPIN BUTTON ===');
         }
 
         function disableSpinButton() {
@@ -852,25 +841,16 @@
         }
 
         function addBet(amount) {
-            alert('Chip clicked! Amount: $' + amount);
-            console.log('=== CHIP CLICKED ===');
-            console.log('Amount:', amount);
-            console.log('Current bet before:', currentBet);
-            console.log('Player balance:', playerBalance);
-            console.log('Type of currentBet:', typeof currentBet);
+            console.log('Adding bet:', amount, 'Current bet:', currentBet);
             
             // Ensure currentBet is a number
             if (typeof currentBet !== 'number' || isNaN(currentBet)) {
-                console.log('currentBet is not a number, setting to 0');
                 currentBet = 0;
             }
-            
-            console.log('After type check, currentBet:', currentBet);
             
             if (currentBet + amount <= playerBalance) {
                 currentBet += amount;
                 console.log('Bet added successfully, new currentBet:', currentBet);
-                alert('Bet added! New total: $' + currentBet);
                 
                 updateBetDisplay();
                 enableSpinButton();
@@ -888,11 +868,8 @@
                 
                 showSuccess('Bet placed: $' + currentBet);
             } else {
-                console.log('Insufficient balance!');
-                alert('Insufficient balance!');
                 showError('Insufficient balance!');
             }
-            console.log('=== END CHIP CLICK ===');
         }
 
         function updateBetDisplay() {
@@ -907,24 +884,27 @@
         }
 
         async function spin() {
-            alert('Spin button clicked! Current bet: $' + currentBet);
-            console.log('=== SPIN CLICKED ===');
             console.log('Spin button clicked - currentBet:', currentBet);
-            console.log('Type of currentBet:', typeof currentBet);
-            console.log('currentBet === 0:', currentBet === 0);
-            console.log('currentBet > 0:', currentBet > 0);
             
             if (currentBet === 0) {
-                console.log('No bet placed, showing error');
-                alert('ERROR: No bet placed!');
                 showError('Please place a bet first!');
                 return;
             }
             
             console.log('Proceeding with spin...');
-            alert('Proceeding with spin...');
-            await makeApiCall('/spin', 'POST');
-            console.log('=== END SPIN ===');
+            
+            // Disable buttons during spin
+            disableSpinButton();
+            
+            // Show spinning animation
+            showSpinningAnimation();
+            
+            try {
+                await makeApiCall('/spin', 'POST');
+            } catch (error) {
+                console.error('Spin error:', error);
+                showError('Spin failed!');
+            }
         }
 
         function toggleAutoSpin() {
@@ -973,12 +953,24 @@
         }
 
 
-        function showLoading() {
-            document.getElementById('loading').style.display = 'block';
+        function showSpinningAnimation() {
+            // Add spinning class to reels
+            for (let i = 1; i <= 5; i++) {
+                const reel = document.getElementById(`reel${i}`);
+                reel.classList.add('spinning');
+            }
+            
+            // Update status
+            document.getElementById('game-status').textContent = '🎰 Spinning...';
+            document.getElementById('game-status').className = 'game-status';
         }
 
-        function hideLoading() {
-            document.getElementById('loading').style.display = 'none';
+        function hideSpinningAnimation() {
+            // Remove spinning class from reels
+            for (let i = 1; i <= 5; i++) {
+                const reel = document.getElementById(`reel${i}`);
+                reel.classList.remove('spinning');
+            }
         }
 
         function showError(message) {
