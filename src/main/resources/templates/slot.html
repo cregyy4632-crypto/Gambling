@@ -343,6 +343,16 @@
             font-weight: bold;
         }
 
+        .success {
+            background: linear-gradient(45deg, #4caf50, #45a049);
+            color: white;
+            padding: 1rem;
+            border-radius: 10px;
+            margin: 1rem 0;
+            text-align: center;
+            font-weight: bold;
+        }
+
         .winning-message {
             background: linear-gradient(45deg, #4caf50, #45b7d1);
             color: white;
@@ -500,6 +510,7 @@
                     <button class="btn btn-bet" onclick="clearBet()">Clear Bet</button>
                     <button class="btn btn-spin" id="spin-btn" onclick="spin()" disabled>🎣 SPIN</button>
                     <button class="btn btn-auto" id="auto-spin-btn" onclick="toggleAutoSpin()" disabled>🔄 AUTO SPIN</button>
+                    <button class="btn btn-test" onclick="testBet()" style="background: #ff6b6b;">TEST BET $10</button>
                 </div>
             </div>
 
@@ -819,25 +830,44 @@
         }
 
         function addBet(amount) {
-            console.log('Adding bet:', amount, 'Current bet:', currentBet, 'Balance:', playerBalance);
+            console.log('=== ADD BET DEBUG ===');
+            console.log('Amount to add:', amount);
+            console.log('Current bet before:', currentBet);
+            console.log('Player balance:', playerBalance);
+            console.log('Type of currentBet:', typeof currentBet);
+            console.log('Type of amount:', typeof amount);
+            
+            // Ensure currentBet is a number
+            if (typeof currentBet !== 'number') {
+                console.log('currentBet is not a number, setting to 0');
+                currentBet = 0;
+            }
             
             if (currentBet + amount <= playerBalance) {
                 currentBet += amount;
+                console.log('Bet added successfully, new currentBet:', currentBet);
+                
                 updateBetDisplay();
                 updateButtonStates();
-                console.log('Bet added successfully, new currentBet:', currentBet);
                 
                 // Show visual feedback
                 const betDisplay = document.getElementById('bet-amount');
-                betDisplay.style.backgroundColor = '#4caf50';
-                betDisplay.style.color = 'white';
-                setTimeout(() => {
-                    betDisplay.style.backgroundColor = '';
-                    betDisplay.style.color = '';
-                }, 500);
+                if (betDisplay) {
+                    betDisplay.style.backgroundColor = '#4caf50';
+                    betDisplay.style.color = 'white';
+                    setTimeout(() => {
+                        betDisplay.style.backgroundColor = '';
+                        betDisplay.style.color = '';
+                    }, 500);
+                }
+                
+                // Show success message
+                showSuccess('Bet placed: $' + currentBet);
             } else {
+                console.log('Insufficient balance! Need:', currentBet + amount, 'Have:', playerBalance);
                 showError('Insufficient balance!');
             }
+            console.log('=== END ADD BET DEBUG ===');
         }
 
         function updateBetDisplay() {
@@ -851,14 +881,22 @@
         }
 
         async function spin() {
-            console.log('Spin button clicked - currentBet:', currentBet, 'playerBalance:', playerBalance);
+            console.log('=== SPIN DEBUG ===');
+            console.log('Spin button clicked');
+            console.log('currentBet:', currentBet, 'Type:', typeof currentBet);
+            console.log('playerBalance:', playerBalance);
+            console.log('currentBet === 0:', currentBet === 0);
+            console.log('currentBet > 0:', currentBet > 0);
             
             if (currentBet === 0) {
+                console.log('No bet placed, showing error');
                 showError('Please place a bet first!');
                 return;
             }
             
+            console.log('Proceeding with spin, calling API...');
             await makeApiCall('/spin', 'POST');
+            console.log('=== END SPIN DEBUG ===');
         }
 
         function toggleAutoSpin() {
@@ -921,9 +959,31 @@
             statusDiv.className = 'error';
         }
 
+        function showSuccess(message) {
+            const statusDiv = document.getElementById('game-status');
+            statusDiv.textContent = '✅ ' + message;
+            statusDiv.className = 'success';
+            setTimeout(() => {
+                statusDiv.textContent = '🎰 Place your bet and click SPIN!';
+                statusDiv.className = 'game-status';
+            }, 2000);
+        }
+
+        function testBet() {
+            console.log('=== TEST BET FUNCTION ===');
+            console.log('Before test bet - currentBet:', currentBet, 'Type:', typeof currentBet);
+            currentBet = 10;
+            console.log('After setting currentBet to 10:', currentBet);
+            updateBetDisplay();
+            updateButtonStates();
+            console.log('Test bet completed');
+            console.log('=== END TEST BET ===');
+        }
+
         // Load initial game state
         window.onload = function() {
             console.log('Page loaded, initializing slot machine');
+            console.log('Initial currentBet:', currentBet, 'Type:', typeof currentBet);
             updateBetDisplay();
             updateButtonStates();
             makeApiCall('/state');
