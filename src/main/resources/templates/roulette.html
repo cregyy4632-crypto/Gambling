@@ -338,6 +338,130 @@
             transform: translate(-50%, -100%);
         }
 
+        .number-popup {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: linear-gradient(45deg, #00ff96, #00d4aa);
+            color: #000;
+            padding: 2rem 3rem;
+            border-radius: 20px;
+            font-size: 4rem;
+            font-weight: bold;
+            z-index: 1000;
+            box-shadow: 0 0 50px rgba(0, 255, 150, 0.8);
+            animation: popupPulse 2s ease-in-out;
+            text-align: center;
+            min-width: 200px;
+        }
+
+        @keyframes popupPulse {
+            0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
+            20% { transform: translate(-50%, -50%) scale(1.2); opacity: 1; }
+            80% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+            100% { transform: translate(-50%, -50%) scale(0.8); opacity: 0; }
+        }
+
+        .betting-table {
+            background: linear-gradient(135deg, #0d4f0d 0%, #0a3a0a 100%);
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 3px solid #8B4513;
+            box-shadow: 
+                0 0 30px rgba(0, 0, 0, 0.5),
+                inset 0 0 20px rgba(0, 0, 0, 0.2);
+            margin-bottom: 2rem;
+        }
+
+        .betting-table-title {
+            text-align: center;
+            color: #00ff96;
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            text-shadow: 0 0 10px rgba(0, 255, 150, 0.5);
+        }
+
+        .table-grid {
+            display: grid;
+            grid-template-columns: repeat(12, 1fr);
+            gap: 2px;
+            margin-bottom: 1rem;
+        }
+
+        .table-cell {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 4px;
+            padding: 0.5rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+            font-weight: bold;
+            min-height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .table-cell:hover {
+            background: rgba(0, 255, 150, 0.2);
+            border-color: #00ff96;
+            transform: scale(1.05);
+        }
+
+        .table-cell.red {
+            background: rgba(255, 0, 0, 0.2);
+            border-color: #ff0000;
+        }
+
+        .table-cell.black {
+            background: rgba(0, 0, 0, 0.3);
+            border-color: #000000;
+        }
+
+        .table-cell.green {
+            background: rgba(0, 255, 150, 0.2);
+            border-color: #00ff96;
+        }
+
+        .outside-bets {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .outside-bet {
+            background: rgba(255, 255, 255, 0.1);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 8px;
+            padding: 1rem;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: bold;
+            color: white;
+        }
+
+        .outside-bet:hover {
+            background: rgba(0, 255, 150, 0.2);
+            border-color: #00ff96;
+            transform: translateY(-2px);
+        }
+
+        .outside-bet.red {
+            background: rgba(255, 0, 0, 0.2);
+            border-color: #ff0000;
+        }
+
+        .outside-bet.black {
+            background: rgba(0, 0, 0, 0.3);
+            border-color: #000000;
+        }
+
         .betting-panel {
             background: rgba(255, 255, 255, 0.03);
             border-radius: 16px;
@@ -702,40 +826,22 @@
         </div>
 
         <div class="betting-panel">
-            <div class="betting-section">
-                <h3 class="betting-title">Outside Bets</h3>
-                <div class="betting-grid">
-                    <button class="bet-button red" onclick="placeBet('red', 0)">RED</button>
-                    <button class="bet-button black" onclick="placeBet('black', 0)">BLACK</button>
-                    <button class="bet-button" onclick="placeBet('even', 0)">EVEN</button>
-                    <button class="bet-button" onclick="placeBet('odd', 0)">ODD</button>
-                    <button class="bet-button" onclick="placeBet('low', 0)">LOW (1-18)</button>
-                    <button class="bet-button" onclick="placeBet('high', 0)">HIGH (19-36)</button>
-                </div>
-            </div>
-
-            <div class="betting-section">
-                <h3 class="betting-title">Dozen Bets</h3>
-                <div class="betting-grid">
-                    <button class="bet-button" onclick="placeBet('dozen1', 0)">1st DOZEN</button>
-                    <button class="bet-button" onclick="placeBet('dozen2', 0)">2nd DOZEN</button>
-                    <button class="bet-button" onclick="placeBet('dozen3', 0)">3rd DOZEN</button>
-                </div>
-            </div>
-
-            <div class="betting-section">
-                <h3 class="betting-title">Column Bets</h3>
-                <div class="betting-grid">
-                    <button class="bet-button" onclick="placeBet('column1', 0)">1st COLUMN</button>
-                    <button class="bet-button" onclick="placeBet('column2', 0)">2nd COLUMN</button>
-                    <button class="bet-button" onclick="placeBet('column3', 0)">3rd COLUMN</button>
-                </div>
-            </div>
-
-            <div class="betting-section">
-                <h3 class="betting-title">Number Bets</h3>
-                <div class="number-grid" id="number-grid">
+            <div class="betting-table">
+                <h3 class="betting-table-title">🎯 ROULETTE TABLE</h3>
+                
+                <!-- Main number grid -->
+                <div class="table-grid" id="main-table">
                     <!-- Numbers will be generated by JavaScript -->
+                </div>
+                
+                <!-- Outside bets -->
+                <div class="outside-bets">
+                    <div class="outside-bet red" onclick="placeBet('red', 0)">RED</div>
+                    <div class="outside-bet black" onclick="placeBet('black', 0)">BLACK</div>
+                    <div class="outside-bet" onclick="placeBet('even', 0)">EVEN</div>
+                    <div class="outside-bet" onclick="placeBet('odd', 0)">ODD</div>
+                    <div class="outside-bet" onclick="placeBet('low', 0)">LOW (1-18)</div>
+                    <div class="outside-bet" onclick="placeBet('high', 0)">HIGH (19-36)</div>
                 </div>
             </div>
 
@@ -763,15 +869,59 @@
 
         // Initialize the game
         function initGame() {
-            generateNumberGrid();
+            createBettingTable();
             createWheelNumbers();
             createWheelSeparators();
             loadGameState();
             updateDisplay();
         }
 
+        function createBettingTable() {
+            const mainTable = document.getElementById('main-table');
+            const numbers = [];
+            
+            // Create numbers 0-36 in proper roulette layout
+            for (let i = 0; i <= 36; i++) {
+                numbers.push(i);
+            }
+            
+            // Create 3 rows of 12 numbers each (0 gets special placement)
+            const rows = [
+                [0], // 0 at the top
+                [3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 36], // First column
+                [2, 5, 8, 11, 14, 17, 20, 23, 26, 29, 32, 35], // Second column  
+                [1, 4, 7, 10, 13, 16, 19, 22, 25, 28, 31, 34]  // Third column
+            ];
+            
+            rows.forEach((row, rowIndex) => {
+                row.forEach((num, colIndex) => {
+                    const cell = document.createElement('div');
+                    cell.className = 'table-cell';
+                    cell.textContent = num;
+                    cell.onclick = () => placeBet('single', num);
+                    
+                    // Color coding
+                    if (num === 0) {
+                        cell.classList.add('green');
+                    } else if (num % 2 === 1) {
+                        cell.classList.add('red');
+                    } else {
+                        cell.classList.add('black');
+                    }
+                    
+                    // Span 12 columns for 0
+                    if (num === 0) {
+                        cell.style.gridColumn = '1 / 13';
+                    }
+                    
+                    mainTable.appendChild(cell);
+                });
+            });
+        }
+
         function createWheelNumbers() {
             const wheelNumbers = document.getElementById('wheel-numbers');
+            // European roulette wheel order
             const numbers = [0, 32, 15, 19, 4, 21, 2, 25, 17, 34, 6, 27, 13, 36, 11, 30, 8, 23, 10, 5, 24, 16, 33, 1, 20, 14, 31, 9, 22, 18, 29, 7, 28, 12, 35, 3, 26];
             
             numbers.forEach((num, index) => {
@@ -804,36 +954,6 @@
             }
         }
 
-        function generateNumberGrid() {
-            const numberGrid = document.getElementById('number-grid');
-            const numbers = [];
-            
-            // Generate numbers 0-36
-            for (let i = 0; i <= 36; i++) {
-                numbers.push(i);
-            }
-            
-            // Shuffle for realistic layout
-            numbers.sort(() => Math.random() - 0.5);
-            
-            numbers.forEach(num => {
-                const button = document.createElement('button');
-                button.className = 'number-button';
-                button.textContent = num;
-                button.onclick = () => placeBet('single', num);
-                
-                // Color coding
-                if (num === 0) {
-                    button.classList.add('green');
-                } else if (num % 2 === 1) {
-                    button.classList.add('red');
-                } else {
-                    button.classList.add('black');
-                }
-                
-                numberGrid.appendChild(button);
-            });
-        }
 
         function placeBet(betType, betValue) {
             const amount = parseInt(document.getElementById('bet-amount').value);
@@ -925,10 +1045,18 @@
                         // Position ball at winning number
                         positionBallAtNumber(gameState.lastWinningNumber);
                         
+                        // Show winning number popup
+                        showWinningNumberPopup(gameState.lastWinningNumber);
+                        
                         // Add to recent numbers
                         if (gameState.lastWinningNumber >= 0) {
                             addRecentNumber(gameState.lastWinningNumber, gameState.lastWinningColor);
                         }
+                        
+                        // Clear bets after showing result
+                        setTimeout(() => {
+                            clearBets();
+                        }, 2000);
                     }, 4000);
                 } else {
                     showMessage(data.message);
@@ -961,6 +1089,27 @@
                 
                 ball.style.transform = `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`;
             }
+        }
+
+        function showWinningNumberPopup(winningNumber) {
+            // Remove any existing popup
+            const existingPopup = document.querySelector('.number-popup');
+            if (existingPopup) {
+                existingPopup.remove();
+            }
+            
+            // Create popup
+            const popup = document.createElement('div');
+            popup.className = 'number-popup';
+            popup.textContent = winningNumber;
+            document.body.appendChild(popup);
+            
+            // Remove popup after animation
+            setTimeout(() => {
+                if (popup.parentNode) {
+                    popup.remove();
+                }
+            }, 2000);
         }
 
         function clearBets() {
