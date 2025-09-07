@@ -125,14 +125,34 @@
 
         .roulette-wheel-container {
             position: relative;
-            width: 300px;
-            height: 300px;
-            margin: 2rem 0;
+            width: 400px;
+            height: 400px;
+            margin: 2rem auto;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .roulette-table {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle, #0d4f0d 0%, #0a3a0a 100%);
+            border-radius: 50%;
+            border: 8px solid #8B4513;
+            box-shadow: 
+                0 0 50px rgba(0, 0, 0, 0.8),
+                inset 0 0 20px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
         }
 
         .roulette-wheel {
-            width: 100%;
-            height: 100%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 350px;
+            height: 350px;
+            transform: translate(-50%, -50%);
             border-radius: 50%;
             background: conic-gradient(
                 #00ff96 0deg 9.73deg,
@@ -173,19 +193,43 @@
                 #ff0000 340.55deg 350.28deg,
                 #000000 350.28deg 360deg
             );
-            border: 8px solid #333;
-            position: relative;
-            transition: transform 3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-            box-shadow: 0 0 30px rgba(0, 0, 0, 0.5);
+            border: 4px solid #333;
+            transition: transform 4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            box-shadow: 
+                0 0 20px rgba(0, 0, 0, 0.5),
+                inset 0 0 10px rgba(0, 0, 0, 0.2);
         }
 
         .roulette-wheel.spinning {
-            animation: spin 3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            animation: wheelSpin 4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
         }
 
-        @keyframes spin {
-            from { transform: rotate(0deg); }
-            to { transform: rotate(1800deg); }
+        @keyframes wheelSpin {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(1800deg); }
+        }
+
+        .wheel-numbers {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            z-index: 2;
+        }
+
+        .wheel-number {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
         }
 
         .wheel-center {
@@ -193,30 +237,105 @@
             top: 50%;
             left: 50%;
             transform: translate(-50%, -50%);
-            width: 60px;
-            height: 60px;
-            background: radial-gradient(circle, #fff 0%, #ccc 100%);
+            width: 80px;
+            height: 80px;
+            background: radial-gradient(circle, #fff 0%, #ddd 50%, #bbb 100%);
             border-radius: 50%;
-            border: 3px solid #333;
+            border: 4px solid #333;
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: bold;
             color: #000;
-            font-size: 1.2rem;
+            font-size: 1.5rem;
+            z-index: 5;
+            box-shadow: 
+                0 0 10px rgba(0, 0, 0, 0.5),
+                inset 0 0 5px rgba(0, 0, 0, 0.2);
+        }
+
+        .roulette-ball {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 16px;
+            height: 16px;
+            background: radial-gradient(circle at 30% 30%, #fff 0%, #ddd 50%, #999 100%);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 10;
+            box-shadow: 
+                0 0 8px rgba(0, 0, 0, 0.5),
+                inset 0 0 4px rgba(255, 255, 255, 0.3);
+            transition: all 4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        .roulette-ball.spinning {
+            animation: ballOrbit 4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+
+        @keyframes ballOrbit {
+            0% { 
+                transform: translate(-50%, -50%) rotate(0deg) translateX(140px) rotate(0deg);
+            }
+            25% { 
+                transform: translate(-50%, -50%) rotate(90deg) translateX(140px) rotate(-90deg);
+            }
+            50% { 
+                transform: translate(-50%, -50%) rotate(180deg) translateX(140px) rotate(-180deg);
+            }
+            75% { 
+                transform: translate(-50%, -50%) rotate(270deg) translateX(140px) rotate(-270deg);
+            }
+            100% { 
+                transform: translate(-50%, -50%) rotate(360deg) translateX(140px) rotate(-360deg);
+            }
         }
 
         .wheel-pointer {
             position: absolute;
-            top: -10px;
+            top: 20px;
             left: 50%;
             transform: translateX(-50%);
             width: 0;
             height: 0;
-            border-left: 15px solid transparent;
-            border-right: 15px solid transparent;
-            border-top: 30px solid #ff6b9d;
-            z-index: 10;
+            border-left: 12px solid transparent;
+            border-right: 12px solid transparent;
+            border-top: 25px solid #ff6b9d;
+            z-index: 15;
+            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
+        }
+
+        .wheel-pointer::after {
+            content: '';
+            position: absolute;
+            top: -30px;
+            left: -8px;
+            width: 16px;
+            height: 8px;
+            background: #ff6b9d;
+            border-radius: 50% 50% 0 0;
+        }
+
+        .wheel-separators {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            z-index: 1;
+        }
+
+        .wheel-separator {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 2px;
+            height: 175px;
+            background: #333;
+            transform-origin: bottom center;
+            transform: translate(-50%, -100%);
         }
 
         .betting-panel {
@@ -482,8 +601,35 @@
             }
             
             .roulette-wheel-container {
-                width: 250px;
-                height: 250px;
+                width: 300px;
+                height: 300px;
+            }
+            
+            .roulette-table {
+                width: 100%;
+                height: 100%;
+            }
+            
+            .roulette-wheel {
+                width: 280px;
+                height: 280px;
+            }
+            
+            .wheel-number {
+                font-size: 10px;
+                width: 16px;
+                height: 16px;
+            }
+            
+            .wheel-center {
+                width: 60px;
+                height: 60px;
+                font-size: 1.2rem;
+            }
+            
+            .roulette-ball {
+                width: 12px;
+                height: 12px;
             }
             
             .betting-grid {
@@ -518,10 +664,15 @@
             <h1 class="game-title">🎯 Roulette</h1>
             
             <div class="roulette-wheel-container">
-                <div class="roulette-wheel" id="roulette-wheel">
+                <div class="roulette-table">
+                    <div class="roulette-wheel" id="roulette-wheel">
+                        <div class="wheel-numbers" id="wheel-numbers"></div>
+                        <div class="wheel-separators" id="wheel-separators"></div>
+                    </div>
+                    <div class="roulette-ball" id="roulette-ball"></div>
                     <div class="wheel-center" id="wheel-center">0</div>
+                    <div class="wheel-pointer"></div>
                 </div>
-                <div class="wheel-pointer"></div>
             </div>
 
             <div class="game-info">
@@ -613,8 +764,44 @@
         // Initialize the game
         function initGame() {
             generateNumberGrid();
+            createWheelNumbers();
+            createWheelSeparators();
             loadGameState();
             updateDisplay();
+        }
+
+        function createWheelNumbers() {
+            const wheelNumbers = document.getElementById('wheel-numbers');
+            const numbers = [0, 32, 15, 19, 4, 21, 2, 25, 17, 34, 6, 27, 13, 36, 11, 30, 8, 23, 10, 5, 24, 16, 33, 1, 20, 14, 31, 9, 22, 18, 29, 7, 28, 12, 35, 3, 26];
+            
+            numbers.forEach((num, index) => {
+                const angle = (index * 360 / numbers.length) - 90; // Start from top
+                const radius = 140; // Distance from center
+                const x = Math.cos(angle * Math.PI / 180) * radius;
+                const y = Math.sin(angle * Math.PI / 180) * radius;
+                
+                const numberElement = document.createElement('div');
+                numberElement.className = 'wheel-number';
+                numberElement.textContent = num;
+                numberElement.style.left = `calc(50% + ${x}px)`;
+                numberElement.style.top = `calc(50% + ${y}px)`;
+                numberElement.style.transform = 'translate(-50%, -50%)';
+                
+                wheelNumbers.appendChild(numberElement);
+            });
+        }
+
+        function createWheelSeparators() {
+            const wheelSeparators = document.getElementById('wheel-separators');
+            const numberOfSeparators = 37; // 0-36
+            
+            for (let i = 0; i < numberOfSeparators; i++) {
+                const angle = (i * 360 / numberOfSeparators);
+                const separator = document.createElement('div');
+                separator.className = 'wheel-separator';
+                separator.style.transform = `translate(-50%, -100%) rotate(${angle}deg)`;
+                wheelSeparators.appendChild(separator);
+            }
         }
 
         function generateNumberGrid() {
@@ -701,11 +888,16 @@
             
             // Start spinning animation
             const wheel = document.getElementById('roulette-wheel');
+            const ball = document.getElementById('roulette-ball');
             const spinButton = document.getElementById('spin-button');
             
             wheel.classList.add('spinning');
+            ball.classList.add('spinning');
             spinButton.disabled = true;
             spinButton.textContent = 'SPINNING...';
+            
+            // Reset ball position
+            ball.style.transform = 'translate(-50%, -50%)';
             
             fetch('/roulette/spin', {
                 method: 'POST',
@@ -719,9 +911,10 @@
                     gameState = data.data;
                     updateDisplay();
                     
-                    // Stop spinning animation after 3 seconds
+                    // Stop spinning animation after 4 seconds
                     setTimeout(() => {
                         wheel.classList.remove('spinning');
+                        ball.classList.remove('spinning');
                         spinButton.disabled = false;
                         spinButton.textContent = 'SPIN WHEEL';
                         
@@ -729,14 +922,18 @@
                         const wheelCenter = document.getElementById('wheel-center');
                         wheelCenter.textContent = gameState.lastWinningNumber;
                         
+                        // Position ball at winning number
+                        positionBallAtNumber(gameState.lastWinningNumber);
+                        
                         // Add to recent numbers
                         if (gameState.lastWinningNumber >= 0) {
                             addRecentNumber(gameState.lastWinningNumber, gameState.lastWinningColor);
                         }
-                    }, 3000);
+                    }, 4000);
                 } else {
                     showMessage(data.message);
                     wheel.classList.remove('spinning');
+                    ball.classList.remove('spinning');
                     spinButton.disabled = false;
                     spinButton.textContent = 'SPIN WHEEL';
                 }
@@ -745,9 +942,25 @@
                 console.error('Error:', error);
                 showMessage('Error spinning wheel!');
                 wheel.classList.remove('spinning');
+                ball.classList.remove('spinning');
                 spinButton.disabled = false;
                 spinButton.textContent = 'SPIN WHEEL';
             });
+        }
+
+        function positionBallAtNumber(winningNumber) {
+            const ball = document.getElementById('roulette-ball');
+            const numbers = [0, 32, 15, 19, 4, 21, 2, 25, 17, 34, 6, 27, 13, 36, 11, 30, 8, 23, 10, 5, 24, 16, 33, 1, 20, 14, 31, 9, 22, 18, 29, 7, 28, 12, 35, 3, 26];
+            const numberIndex = numbers.indexOf(winningNumber);
+            
+            if (numberIndex !== -1) {
+                const angle = (numberIndex * 360 / numbers.length) - 90;
+                const radius = 140;
+                const x = Math.cos(angle * Math.PI / 180) * radius;
+                const y = Math.sin(angle * Math.PI / 180) * radius;
+                
+                ball.style.transform = `translate(calc(-50% + ${x}px), calc(-50% + ${y}px))`;
+            }
         }
 
         function clearBets() {
