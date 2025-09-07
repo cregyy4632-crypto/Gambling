@@ -19,6 +19,11 @@ public class HomeController {
     public String slot() {
         return "slot";
     }
+    
+    @GetMapping("/roulette")
+    public String roulette() {
+        return "roulette";
+    }
 }
 
 

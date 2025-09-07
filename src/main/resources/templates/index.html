@@ -408,6 +408,7 @@
                 <li class="nav-item"><a href="#" class="active">Dashboard</a></li>
                 <li class="nav-item"><a href="/blackjack">Blackjack</a></li>
                 <li class="nav-item"><a href="/slot">Slots</a></li>
+                <li class="nav-item"><a href="/roulette">Roulette</a></li>
                 <li class="nav-item"><a href="#">Live Support</a></li>
             </ul>
             <div class="user-info">
@@ -431,13 +432,13 @@
                 <span class="sidebar-icon">🎰</span>
                 <span>Slots</span>
             </a>
+            <a href="/roulette" class="sidebar-item">
+                <span class="sidebar-icon">🎯</span>
+                <span>Roulette</span>
+            </a>
             <a href="#" class="sidebar-item">
                 <span class="sidebar-icon">🎲</span>
                 <span>Dice</span>
-            </a>
-            <a href="#" class="sidebar-item">
-                <span class="sidebar-icon">🎯</span>
-                <span>Roulette</span>
             </a>
             <a href="#" class="sidebar-item">
                 <span class="sidebar-icon">💬</span>
@@ -491,11 +492,11 @@
                     <button class="play-btn" disabled>Coming Soon</button>
                 </div>
 
-                <div class="game-card">
+                <div class="game-card" onclick="playGame('/roulette')">
                     <div class="game-icon">🎯</div>
                     <h3 class="game-title">Roulette</h3>
-                    <p class="game-description">Coming soon - Spin the wheel and place your bets on the classic roulette table</p>
-                    <button class="play-btn" disabled>Coming Soon</button>
+                    <p class="game-description">Spin the wheel and place your bets on the classic roulette table with multiple betting options</p>
+                    <a href="/roulette" class="play-btn">Play Now</a>
                 </div>
             </div>
         </div>
