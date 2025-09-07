@@ -358,6 +358,7 @@
             grid-template-columns: repeat(12, 1fr);
             gap: 2px;
             margin-bottom: 1rem;
+            max-width: 100%;
         }
 
         .table-cell {
@@ -422,7 +423,7 @@
 
         .outside-bets {
             display: grid;
-            grid-template-columns: repeat(6, 1fr);
+            grid-template-columns: repeat(3, 1fr);
             gap: 0.5rem;
             margin-top: 1rem;
         }
@@ -918,22 +919,16 @@
 
         function createBettingTable() {
             const mainTable = document.getElementById('main-table');
-            const numbers = [];
             
-            // Create numbers 0-36 in proper roulette layout
-            for (let i = 0; i <= 36; i++) {
-                numbers.push(i);
-            }
-            
-            // Create 3 rows of 12 numbers each (0 gets special placement)
-            const rows = [
+            // Create proper roulette table layout
+            const numbers = [
                 [0], // 0 at the top
                 [3, 6, 9, 12, 15, 18, 21, 24, 27, 30, 33, 36], // First column
                 [2, 5, 8, 11, 14, 17, 20, 23, 26, 29, 32, 35], // Second column  
                 [1, 4, 7, 10, 13, 16, 19, 22, 25, 28, 31, 34]  // Third column
             ];
             
-            rows.forEach((row, rowIndex) => {
+            numbers.forEach((row, rowIndex) => {
                 row.forEach((num, colIndex) => {
                     const cell = document.createElement('div');
                     cell.className = 'table-cell';
@@ -943,15 +938,11 @@
                     // Color coding
                     if (num === 0) {
                         cell.classList.add('green');
+                        cell.style.gridColumn = '1 / 13'; // Span all 12 columns
                     } else if (num % 2 === 1) {
                         cell.classList.add('red');
                     } else {
                         cell.classList.add('black');
-                    }
-                    
-                    // Span 12 columns for 0
-                    if (num === 0) {
-                        cell.style.gridColumn = '1 / 13';
                     }
                     
                     mainTable.appendChild(cell);
