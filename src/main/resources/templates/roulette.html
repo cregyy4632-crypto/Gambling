@@ -154,50 +154,23 @@
             height: 350px;
             transform: translate(-50%, -50%);
             border-radius: 50%;
-            background: conic-gradient(
-                #00ff96 0deg 9.73deg,
-                #ff0000 9.73deg 19.46deg,
-                #000000 19.46deg 29.19deg,
-                #ff0000 29.19deg 38.92deg,
-                #000000 38.92deg 48.65deg,
-                #ff0000 48.65deg 58.38deg,
-                #000000 58.38deg 68.11deg,
-                #ff0000 68.11deg 77.84deg,
-                #000000 77.84deg 87.57deg,
-                #ff0000 87.57deg 97.30deg,
-                #000000 97.30deg 107.03deg,
-                #ff0000 107.03deg 116.76deg,
-                #000000 116.76deg 126.49deg,
-                #ff0000 126.49deg 136.22deg,
-                #000000 136.22deg 145.95deg,
-                #ff0000 145.95deg 155.68deg,
-                #000000 155.68deg 165.41deg,
-                #ff0000 165.41deg 175.14deg,
-                #000000 175.14deg 184.87deg,
-                #ff0000 184.87deg 194.60deg,
-                #000000 194.60deg 204.33deg,
-                #ff0000 204.33deg 214.06deg,
-                #000000 214.06deg 223.79deg,
-                #ff0000 223.79deg 233.52deg,
-                #000000 233.52deg 243.25deg,
-                #ff0000 243.25deg 252.98deg,
-                #000000 252.98deg 262.71deg,
-                #ff0000 262.71deg 272.44deg,
-                #000000 272.44deg 282.17deg,
-                #ff0000 282.17deg 291.90deg,
-                #000000 291.90deg 301.63deg,
-                #ff0000 301.63deg 311.36deg,
-                #000000 311.36deg 321.09deg,
-                #ff0000 321.09deg 330.82deg,
-                #000000 330.82deg 340.55deg,
-                #ff0000 340.55deg 350.28deg,
-                #000000 350.28deg 360deg
-            );
+            background: #333;
             border: 4px solid #333;
             transition: transform 4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
             box-shadow: 
                 0 0 20px rgba(0, 0, 0, 0.5),
                 inset 0 0 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .wheel-section {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 175px;
+            height: 175px;
+            transform-origin: 0 0;
+            border: 1px solid #333;
+            clip-path: polygon(0 0, 100% 0, 50% 100%);
         }
 
         .roulette-wheel.spinning {
@@ -221,15 +194,33 @@
 
         .wheel-number {
             position: absolute;
-            width: 20px;
-            height: 20px;
+            width: 30px;
+            height: 30px;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 12px;
+            font-size: 14px;
             font-weight: bold;
             color: white;
             text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+            border-radius: 50%;
+            z-index: 10;
+        }
+
+        .wheel-number.red {
+            background: rgba(255, 0, 0, 0.8);
+            border: 2px solid #ff0000;
+        }
+
+        .wheel-number.black {
+            background: rgba(0, 0, 0, 0.8);
+            border: 2px solid #000000;
+        }
+
+        .wheel-number.green {
+            background: rgba(0, 255, 150, 0.8);
+            border: 2px solid #00ff96;
+            color: #000;
         }
 
         .wheel-center {
@@ -293,28 +284,7 @@
         }
 
         .wheel-pointer {
-            position: absolute;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 0;
-            height: 0;
-            border-left: 12px solid transparent;
-            border-right: 12px solid transparent;
-            border-top: 25px solid #ff6b9d;
-            z-index: 15;
-            filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.5));
-        }
-
-        .wheel-pointer::after {
-            content: '';
-            position: absolute;
-            top: -30px;
-            left: -8px;
-            width: 16px;
-            height: 8px;
-            background: #ff6b9d;
-            border-radius: 50% 50% 0 0;
+            display: none;
         }
 
         .wheel-separators {
@@ -404,6 +374,29 @@
             display: flex;
             align-items: center;
             justify-content: center;
+            position: relative;
+        }
+
+        .table-cell.bet-placed {
+            background: rgba(0, 255, 150, 0.3);
+            border-color: #00ff96;
+            box-shadow: 0 0 10px rgba(0, 255, 150, 0.5);
+        }
+
+        .bet-amount {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #00ff96;
+            color: #000;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: bold;
         }
 
         .table-cell:hover {
@@ -460,6 +453,28 @@
         .outside-bet.black {
             background: rgba(0, 0, 0, 0.3);
             border-color: #000000;
+        }
+
+        .outside-bet.bet-placed {
+            background: rgba(0, 255, 150, 0.3);
+            border-color: #00ff96;
+            box-shadow: 0 0 10px rgba(0, 255, 150, 0.5);
+        }
+
+        .outside-bet .bet-amount {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #00ff96;
+            color: #000;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.7rem;
+            font-weight: bold;
         }
 
         .betting-panel {
@@ -790,6 +805,7 @@
             <div class="roulette-wheel-container">
                 <div class="roulette-table">
                     <div class="roulette-wheel" id="roulette-wheel">
+                        <div class="wheel-sections" id="wheel-sections"></div>
                         <div class="wheel-numbers" id="wheel-numbers"></div>
                     </div>
                     <div class="roulette-ball" id="roulette-ball"></div>
@@ -869,9 +885,35 @@
         // Initialize the game
         function initGame() {
             createBettingTable();
+            createWheelSections();
             createWheelNumbers();
             loadGameState();
             updateDisplay();
+        }
+
+        function createWheelSections() {
+            const wheelSections = document.getElementById('wheel-sections');
+            const numbers = [0, 32, 15, 19, 4, 21, 2, 25, 17, 34, 6, 27, 13, 36, 11, 30, 8, 23, 10, 5, 24, 16, 33, 1, 20, 14, 31, 9, 22, 18, 29, 7, 28, 12, 35, 3, 26];
+            
+            numbers.forEach((num, index) => {
+                const section = document.createElement('div');
+                section.className = 'wheel-section';
+                
+                // Each section is 9.73 degrees (360/37)
+                const angle = index * 9.73;
+                section.style.transform = `translate(-50%, -50%) rotate(${angle}deg)`;
+                
+                // Color coding
+                if (num === 0) {
+                    section.style.background = '#00ff96';
+                } else if (num % 2 === 1) {
+                    section.style.background = '#ff0000';
+                } else {
+                    section.style.background = '#000000';
+                }
+                
+                wheelSections.appendChild(section);
+            });
         }
 
         function createBettingTable() {
@@ -919,13 +961,13 @@
 
         function createWheelNumbers() {
             const wheelNumbers = document.getElementById('wheel-numbers');
-            // European roulette wheel order - these match the conic-gradient sections
+            // European roulette wheel order - these match the wheel sections
             const numbers = [0, 32, 15, 19, 4, 21, 2, 25, 17, 34, 6, 27, 13, 36, 11, 30, 8, 23, 10, 5, 24, 16, 33, 1, 20, 14, 31, 9, 22, 18, 29, 7, 28, 12, 35, 3, 26];
             
             numbers.forEach((num, index) => {
                 // Each section is 9.73 degrees (360/37)
                 const angle = (index * 9.73) - 90; // Start from top, each section is 9.73 degrees
-                const radius = 130; // Distance from center
+                const radius = 100; // Distance from center (closer to center)
                 const x = Math.cos(angle * Math.PI / 180) * radius;
                 const y = Math.sin(angle * Math.PI / 180) * radius;
                 
@@ -935,6 +977,15 @@
                 numberElement.style.left = `calc(50% + ${x}px)`;
                 numberElement.style.top = `calc(50% + ${y}px)`;
                 numberElement.style.transform = 'translate(-50%, -50%)';
+                
+                // Add color class
+                if (num === 0) {
+                    numberElement.classList.add('green');
+                } else if (num % 2 === 1) {
+                    numberElement.classList.add('red');
+                } else {
+                    numberElement.classList.add('black');
+                }
                 
                 wheelNumbers.appendChild(numberElement);
             });
@@ -972,6 +1023,7 @@
                 if (data.success) {
                     gameState = data.data;
                     updateDisplay();
+                    updateBettingTable();
                 } else {
                     showMessage(data.message);
                 }
@@ -979,6 +1031,56 @@
             .catch(error => {
                 console.error('Error:', error);
                 showMessage('Error placing bet!');
+            });
+        }
+
+        function updateBettingTable() {
+            // Update table cells
+            const tableCells = document.querySelectorAll('.table-cell');
+            tableCells.forEach(cell => {
+                const number = parseInt(cell.textContent);
+                const betKey = `single_${number}`;
+                
+                if (gameState.bets[betKey]) {
+                    cell.classList.add('bet-placed');
+                    let betAmount = cell.querySelector('.bet-amount');
+                    if (!betAmount) {
+                        betAmount = document.createElement('div');
+                        betAmount.className = 'bet-amount';
+                        cell.appendChild(betAmount);
+                    }
+                    betAmount.textContent = gameState.bets[betKey];
+                } else {
+                    cell.classList.remove('bet-placed');
+                    const betAmount = cell.querySelector('.bet-amount');
+                    if (betAmount) {
+                        betAmount.remove();
+                    }
+                }
+            });
+
+            // Update outside bets
+            const outsideBets = document.querySelectorAll('.outside-bet');
+            outsideBets.forEach(bet => {
+                const betType = bet.onclick.toString().match(/placeBet\('(\w+)'/)[1];
+                const betKey = `${betType}_0`;
+                
+                if (gameState.bets[betKey]) {
+                    bet.classList.add('bet-placed');
+                    let betAmount = bet.querySelector('.bet-amount');
+                    if (!betAmount) {
+                        betAmount = document.createElement('div');
+                        betAmount.className = 'bet-amount';
+                        bet.appendChild(betAmount);
+                    }
+                    betAmount.textContent = gameState.bets[betKey];
+                } else {
+                    bet.classList.remove('bet-placed');
+                    const betAmount = bet.querySelector('.bet-amount');
+                    if (betAmount) {
+                        betAmount.remove();
+                    }
+                }
             });
         }
 
@@ -1071,7 +1173,7 @@
             if (numberIndex !== -1) {
                 // Each section is 9.73 degrees (360/37)
                 const angle = (numberIndex * 9.73) - 90;
-                const radius = 130; // Same radius as numbers
+                const radius = 100; // Same radius as numbers
                 const x = Math.cos(angle * Math.PI / 180) * radius;
                 const y = Math.sin(angle * Math.PI / 180) * radius;
                 
@@ -1090,6 +1192,19 @@
             const popup = document.createElement('div');
             popup.className = 'number-popup';
             popup.textContent = winningNumber;
+            
+            // Add color based on winning number
+            if (winningNumber === 0) {
+                popup.style.background = 'linear-gradient(45deg, #00ff96, #00d4aa)';
+                popup.style.color = '#000';
+            } else if (winningNumber % 2 === 1) {
+                popup.style.background = 'linear-gradient(45deg, #ff0000, #ff4444)';
+                popup.style.color = '#fff';
+            } else {
+                popup.style.background = 'linear-gradient(45deg, #000000, #333333)';
+                popup.style.color = '#fff';
+            }
+            
             document.body.appendChild(popup);
             
             // Remove popup after animation
@@ -1112,6 +1227,7 @@
                 if (data.success) {
                     gameState = data.data;
                     updateDisplay();
+                    updateBettingTable();
                 } else {
                     showMessage(data.message);
                 }
@@ -1132,6 +1248,7 @@
                 if (data.success) {
                     gameState = data.data;
                     updateDisplay();
+                    updateBettingTable();
                 }
             })
             .catch(error => {
